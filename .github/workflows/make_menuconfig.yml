@@ -1,0 +1,57 @@
+name: Build BBR V2(interactive for make_menuconfig, ssh tmate required)
+
+on:
+  push:
+    branches: 
+      - main
+      - v2alpha
+  pull_request:
+    branches: 
+      - main
+      - v2alpha
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron: '30 6 * * 1'
+    
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: true
+        default: 'true'
+
+env:
+  REPO_URL: https://github.com/google/bbr
+  REPO_BRANCH: v2alpha
+  REPO_NAME: google-bbr
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: .config
+  UPLOAD_BIN_DIR: false
+  UPLOAD_FIRMWARE: true
+  UPLOAD_WETRANSFER: false
+  UPLOAD_RELEASE: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: init
+        run: |
+          sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
+          sudo -E apt-get -qq install kernel-package tmux
+          sudo -E apt-get -qq build-dep linux
+
+      - name: Clone source code
+        working-directory: $HOME
+        run: |
+          df -hT $PWD
+          git clone $REPO_URL -b $REPO_BRANCH $REPO_NAME
+          
