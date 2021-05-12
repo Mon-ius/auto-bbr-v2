@@ -48,9 +48,11 @@ jobs:
           sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
           sudo -E apt-get -qq install kernel-package tmux
           sudo -E apt-get -qq build-dep linux
+          sudo mkdir -p /bbr
+          sudo chown $USER:$GROUPS /bbr
 
       - name: Clone source code
-        working-directory: $HOME
+        working-directory: /bbr
         run: |
           df -hT $PWD
           git clone $REPO_URL -b $REPO_BRANCH $REPO_NAME
