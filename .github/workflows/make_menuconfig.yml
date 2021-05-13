@@ -60,7 +60,7 @@ jobs:
       - name: Load config
         run: |
           [ -e $CONFIG_FILE ] && mv $CONFIG_FILE $REPO_NAME/.config
-          cd openwrt
+          cd $REPO_NAME
           
       - name: Disable DEBUG_INFO and DEBUG_INFO
         run:
