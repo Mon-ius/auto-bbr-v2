@@ -1,17 +1,24 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the action will run. 
+name: Build GOOGLE-BBR V2
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: 
+      - main
+      - v2alpha
   pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: 
+      - main
+      - v2alpha
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron: '30 6 * * 1'
+    
+  repository_dispatch:
   workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: true
+        default: 'true'
 
 env:
   REPO_URL: https://github.com/google/bbr
@@ -23,32 +30,64 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: false
-  BRANCH: "2333"
-  
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+  LOCALVERSION: ""
+  GCE_PKG_DIR: ""
+  GCE_INSTALL_DIR: ""
+  GCE_BUILD_DIR: ""
+  KERNEL_PKG: ""
+  MAKE_OPTS: ""
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      # Runs a set of commands using the runners shell
-      
-      - name: test set env 2
-        run: | 
-          echo "BRANCH=1" >> $GITHUB_ENV
-          echo "ss=1" >> $GITHUB_ENV
-          
-      - name: test echo env 1
+
+      # Runs a single command using the runners shell
+      - name: init
         run: |
-          echo $BRANCH
-          echo ${BRANCH}
-          echo ${{ env.BRANCH }}
-          echo $ss
-          echo ${ss}
-          echo ${{ env.ss }}
+          sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
+          sudo -E apt-get -qq install kernel-package tmux
+          sudo -E apt-get -qq build-dep linux
+          sudo mkdir -p /bbr
+          sudo chown $USER:$GROUPS /bbr
+
+      - name: Clone source code
+        working-directory: /bbr
+        run: |
+          df -hT $PWD
+          git clone $REPO_URL -b $REPO_BRANCH $REPO_NAME
+          ln -sf /bbr/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
+
+      - name: set env and config
+        working-directory: /bbr
+        run: |
+          cd $REPO_NAME
+          echo ${PWD}
+          echo "BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g` " >> $GITHUB_ENV
+          echo "SHA1=`git rev-parse --short HEAD` " >> $GITHUB_ENV
+          echo "LOCALVERSION=+${BRANCH}+${SHA1}+GCE " >> $GITHUB_ENV
+          echo "GCE_PKG_DIR=${PWD}/gce/${LOCALVERSION}/pkg " >> $GITHUB_ENV
+          echo "GCE_INSTALL_DIR=${PWD}/gce/${LOCALVERSION}/install " >> $GITHUB_ENV
+          echo "GCE_BUILD_DIR=${PWD}/gce/${LOCALVERSION}/build " >> $GITHUB_ENV
+          echo "KERNEL_PKG=kernel-${LOCALVERSION}.tar.gz2 " >> $GITHUB_ENV
+          echo "MAKE_OPTS="-j`nproc` \
+                    LOCALVERSION=${LOCALVERSION} \
+                    EXTRAVERSION='' \
+                    INSTALL_PATH=${GCE_INSTALL_DIR}/boot \
+                    INSTALL_MOD_PATH=${GCE_INSTALL_DIR}" " >> $GITHUB_ENV
+          echo "cleaning..."
+          mkdir -p ${GCE_BUILD_DIR}
+          mkdir -p ${GCE_INSTALL_DIR}/boot
+          mkdir -p ${GCE_PKG_DIR}
+          echo "copying config.gce to .config ..."
+          cp config.gce .config
           
+      - name: Disable DEBUG_INFO and DEBUG_INFO
+        working-directory: /bbr
+        run:
+          echo $MAKE_OPTS
