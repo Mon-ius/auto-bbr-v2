@@ -47,7 +47,15 @@ jobs:
           
       - name: test set env 1
         run: 
-          BRANCH=1
+          $BRANCH=1
+          
+      - name: test echo env 1
+        run:  
+          echo $BRANCH
+          
+      - name: test set env 1
+        run: 
+          export BRANCH=1
           
       - name: test echo env 1
         run:  
