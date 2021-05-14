@@ -13,6 +13,18 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  REPO_URL: https://github.com/google/bbr
+  REPO_BRANCH: v2alpha
+  REPO_NAME: google-bbr
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: .config
+  UPLOAD_BIN_DIR: false
+  UPLOAD_FIRMWARE: true
+  UPLOAD_WETRANSFER: false
+  UPLOAD_RELEASE: false
+  BRANCH: "2333"
+  
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -25,32 +37,18 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo '''set -e
-            usage() {
-              echo "gce-install.sh -m <MACHINE_IP>"
-            }
-            MACHINE=""
-            VERBOSE=""
-            while getopts "h?vm:p:z:" opt; do
-              case "${opt}" in
-                h|\?)
-                  usage
-                  exit 0
-                  ;;
-                v)
-                  VERBOSE="set -x"
-                  ;;
-                m)
-                  MACHINE=${OPTARG}
-                  ;;
-              esac
-            done
-            echo $MACHINE
-            if [ -z ${MACHINE} ]; then
-              usage
-              exit -1
-            fi''' >> test.sh
-          sudo chmod +x test.sh
-          ./test.sh -m 127.0.0.1
+      - name: test echo env 1
+        run:  
+          echo $BRANCH
+          
+      - name: test echo env 2
+        run: 
+          echo ${BRANCH}
+          
+      - name: test set env 1
+        run: 
+          BRANCH=1
+          
+      - name: test echo env 1
+        run:  
+          echo $BRANCH
