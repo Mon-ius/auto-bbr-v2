@@ -57,17 +57,15 @@ jobs:
           sudo chown $USER:$GROUPS /bbr
 
       - name: Clone source code
-        working-directory: /bbr
+        working-directory: /bbr/{{env.REPO_NAME}}
         run: |
           df -hT $PWD
           git clone $REPO_URL -b $REPO_BRANCH $REPO_NAME
           ln -sf /bbr/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
 
       - name: set env and config
-        working-directory: /bbr
+        working-directory: /bbr/{{env.REPO_NAME}}
         run: |
-          cd $REPO_NAME
-          echo ${PWD}
           echo "BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g` " >> $GITHUB_ENV
           echo "SHA1=`git rev-parse --short HEAD` " >> $GITHUB_ENV
           echo "LOCALVERSION=+${BRANCH}+${SHA1}+GCE " >> $GITHUB_ENV
@@ -81,13 +79,12 @@ jobs:
                     INSTALL_PATH=${GCE_INSTALL_DIR}/boot \
                     INSTALL_MOD_PATH=${GCE_INSTALL_DIR}" " >> $GITHUB_ENV
           echo "cleaning..."
+          echo ${GCE_BUILD_DIR}
+          echo ${GCE_INSTALL_DIR}/boot
+          echo ${MAKE_OPTS}
+          
           mkdir -p ${GCE_BUILD_DIR}
           mkdir -p ${GCE_INSTALL_DIR}/boot
           mkdir -p ${GCE_PKG_DIR}
           echo "copying config.gce to .config ..."
           cp config.gce .config
-          
-      - name: Disable DEBUG_INFO and DEBUG_INFO
-        working-directory: /bbr
-        run:
-          echo $MAKE_OPTS
