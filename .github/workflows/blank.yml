@@ -47,8 +47,10 @@ jobs:
                   ;;
               esac
             done
+            echo $MACHINE
             if [ -z ${MACHINE} ]; then
               usage
               exit -1
             fi''' >> test.sh
-          cat test.sh
+          sudo chmod +x test.sh
+          ./test.sh -m 127.0.0.1
