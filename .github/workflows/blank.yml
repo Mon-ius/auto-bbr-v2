@@ -66,18 +66,18 @@ jobs:
       - name: set env and config
         working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
-          echo "BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g` " >> $GITHUB_ENV
-          echo "SHA1=`git rev-parse --short HEAD` " >> $GITHUB_ENV
-          echo "LOCALVERSION=+${BRANCH}+${SHA1}+GCE " >> $GITHUB_ENV
-          echo "GCE_PKG_DIR=${PWD}/gce/${LOCALVERSION}/pkg " >> $GITHUB_ENV
-          echo "GCE_INSTALL_DIR=${PWD}/gce/${LOCALVERSION}/install " >> $GITHUB_ENV
-          echo "GCE_BUILD_DIR=${PWD}/gce/${LOCALVERSION}/build " >> $GITHUB_ENV
-          echo "KERNEL_PKG=kernel-${LOCALVERSION}.tar.gz2 " >> $GITHUB_ENV
-          echo "MAKE_OPTS="-j`nproc` \
+          BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
+          SHA1=`git rev-parse --short HEAD`
+          LOCALVERSION=+${BRANCH}+${SHA1}+GCE
+          GCE_PKG_DIR=${PWD}/gce/${LOCALVERSION}/pkg
+          GCE_INSTALL_DIR=${PWD}/gce/${LOCALVERSION}/install
+          GCE_BUILD_DIR=${PWD}/gce/${LOCALVERSION}/build
+          KERNEL_PKG=kernel-${LOCALVERSION}.tar.gz2
+          MAKE_OPTS="-j`nproc` \
                     LOCALVERSION=${LOCALVERSION} \
-                    EXTRAVERSION='' \
+                    EXTRAVERSION="" \
                     INSTALL_PATH=${GCE_INSTALL_DIR}/boot \
-                    INSTALL_MOD_PATH=${GCE_INSTALL_DIR}" " >> $GITHUB_ENV
+                    INSTALL_MOD_PATH=${GCE_INSTALL_DIR}"
           echo "cleaning..."
           echo ${GCE_BUILD_DIR}
           echo ${GCE_INSTALL_DIR}/boot
@@ -86,6 +86,15 @@ jobs:
           mkdir -p ${GCE_BUILD_DIR}
           mkdir -p ${GCE_INSTALL_DIR}/boot
           mkdir -p ${GCE_PKG_DIR}
+          
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+          echo "SHA1=$SHA1" >> $GITHUB_ENV
+          echo "LOCALVERSION=$LOCALVERSION" >> $GITHUB_ENV
+          echo "GCE_PKG_DIR=$GCE_PKG_DIR" >> $GITHUB_ENV
+          echo "GCE_INSTALL_DIR=$GCE_INSTALL_DIR" >> $GITHUB_ENV
+          echo "GCE_BUILD_DIR=$GCE_BUILD_DIR" >> $GITHUB_ENV
+          echo "KERNEL_PKG=$KERNEL_PKG" >> $GITHUB_ENV
+          echo "MAKE_OPTS=$MAKE_OPTS" >> $GITHUB_ENV
           echo "copying config.gce to .config ..."
           cp config.gce .config
 
