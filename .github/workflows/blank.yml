@@ -47,7 +47,7 @@ jobs:
           
       - name: test set env 1
         run: 
-          export env.BRANCH=1
+          export "BRANCH=1" >>$GITHUB_ENV
           
       - name: test echo env 1
         run:  
