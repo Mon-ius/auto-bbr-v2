@@ -64,7 +64,7 @@ jobs:
           ln -sf /bbr/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
 
       - name: set env and config
-        working-directory: /bbr/{{env.REPO_NAME}}
+        working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
           echo "BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g` " >> $GITHUB_ENV
           echo "SHA1=`git rev-parse --short HEAD` " >> $GITHUB_ENV
@@ -90,7 +90,37 @@ jobs:
           cp config.gce .config
 
       - name: Disable DEBUG_INFO and DEBUG_INFO
-        working-directory: /bbr/{{env.REPO_NAME}}
+        working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
           echo $MAKE_OPTS
           ./scripts/config --disable MODULE_SIG && ./scripts/config --disable DEBUG_INFO
+
+      - name: Build kernel-package 
+        working-directory: ${{ env.REPO_NAME }}
+        run: |
+          set +e
+          echo "running make olddefconfig ..."
+          make olddefconfig               > /tmp/make.olddefconfig
+          make ${MAKE_OPTS} prepare         > /tmp/make.prepare
+          echo "making..."
+          make ${MAKE_OPTS}                 > /tmp/make.default
+          echo "making modules ..."
+          make ${MAKE_OPTS} modules         > /tmp/make.modules
+          echo "making install ..."
+          make ${MAKE_OPTS} install         > /tmp/make.install
+          echo "making modules_install ..."
+          make ${MAKE_OPTS} modules_install > /tmp/make.modules_install
+          set -e
+          echo "making tarball ..."
+          (cd ${GCE_INSTALL_DIR}; tar -cvzf ${GCE_PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
+          
+      - name: List packages
+        working-directory: /bbr
+        run:
+          cp -r ${GCE_PKG_DIR}/${KERNEL_PKG} /bbr && ls -alh /bbr
+          
+      - name: Check space usage
+        if: (!cancelled())
+        run: df -hT
+        
+          
