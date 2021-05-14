@@ -47,7 +47,7 @@ jobs:
           
       - name: test set env 1
         run: 
-          $BRANCH=1
+          env.BRANCH=1
           
       - name: test echo env 1
         run:  
