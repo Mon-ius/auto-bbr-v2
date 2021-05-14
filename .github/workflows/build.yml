@@ -68,7 +68,7 @@ jobs:
         run: |
           BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
           SHA1=`git rev-parse --short HEAD`
-          LOCALVERSION=+${BRANCH}+${SHA1}+GCE
+          LOCALVERSION=${BRANCH}_${SHA1}
           GCE_PKG_DIR=${PWD}/gce/${LOCALVERSION}/pkg
           GCE_INSTALL_DIR=${PWD}/gce/${LOCALVERSION}/install
           GCE_BUILD_DIR=${PWD}/gce/${LOCALVERSION}/build
