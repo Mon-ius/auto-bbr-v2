@@ -53,6 +53,8 @@ jobs:
           sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
           sudo -E apt-get -qq install kernel-package tmux
           sudo -E apt-get -qq build-dep linux
+          sudo -E apt-get -qq autoremove --purge
+          sudo -E apt-get -qq clean
           sudo mkdir -p /bbr
           sudo chown $USER:$GROUPS /bbr
 
@@ -68,7 +70,7 @@ jobs:
         run: |
           BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
           SHA1=`git rev-parse --short HEAD`
-          LOCALVERSION="1"
+          LOCALVERSION=_0.1
           GCE_PKG_DIR=${PWD}/gce/${LOCALVERSION}/pkg
           GCE_INSTALL_DIR=${PWD}/gce/${LOCALVERSION}/install
           GCE_BUILD_DIR=${PWD}/gce/${LOCALVERSION}/build
@@ -119,6 +121,7 @@ jobs:
           set -e
           echo "making tarball ..."
           (cd ${GCE_INSTALL_DIR}; tar -cvzf ${GCE_PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
+          cat scripts/Makefile.package
           make -j`nproc` deb-pkg
           echo "::set-output name=status::success"
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
