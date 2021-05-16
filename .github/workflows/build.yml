@@ -104,9 +104,10 @@ jobs:
           ./scripts/config --disable MODULE_SIG && ./scripts/config --disable DEBUG_INFO
 
       - name: Build kernel-package 
-        working-directory: ${{ env.REPO_NAME }}
+        working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
           set +e
+          echo $(PWD)
           echo "running make olddefconfig ..."
           make olddefconfig               > /tmp/make.olddefconfig
           make ${MAKE_OPTS} prepare         > /tmp/make.prepare
@@ -121,7 +122,9 @@ jobs:
           set -e
           echo "making tarball ..."
           (cd ${GCE_INSTALL_DIR}; tar -cvzf ${GCE_PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
+          echo $(PWD)
           cat scripts/Makefile.package
+          git clean -fx
           make -j`nproc` deb-pkg
           echo "::set-output name=status::success"
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
