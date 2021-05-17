@@ -138,7 +138,7 @@ jobs:
         run: |
           ls -al .*
           rm -rf .git .idea .pybuild
-          debuild -i
+          debuild -i '(^|/)\.(git|idea|pybuild)($|/)'
           make -j`nproc` deb-pkg LOCALVERSION=-custom
 
       - name: extract packages
