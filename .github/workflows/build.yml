@@ -57,7 +57,7 @@ jobs:
           sudo -E apt-get -qq clean
           sudo mkdir -p /bbr /release/upload
           sudo chown $USER:$GROUPS /bbr
-          sudo chown $USER:$GROUPS /release
+          sudo chown -R $USER:$GROUPS /release
 
       - name: Clone source code
         working-directory: /bbr
@@ -145,10 +145,11 @@ jobs:
           ls -al .*
           rm -rf .git .idea .pybuild
           ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_ecdsa -q -N ""
+          grep '^VERSION=*\|^PATCHLEVEL=*' Makefile | sed 's/.*=\(.*\)/\1/' | sed -e 's/ //g' | sed ':a;N;$!ba;s/\n/./g' > VER
           make -j`nproc` deb-pkg LOCALVERSION=-custom
           cd /bbr && mv *.deb /release/upload
           echo "::set-output name=status::success"
-          echo "DEB_NAME=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+          echo "DEB_NAME=Ubuntu_2004_kernel_$VER_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
       - name: Check space usage
         if: (!cancelled())
@@ -161,14 +162,14 @@ jobs:
         uses: actions/upload-artifact@main
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_PKG_DIR == 'true'
         with:
-          name: Ubuntu_2004_kernel_${{ env.DEB_NAME }}
+          name: ${{ env.DEB_NAME }}
           path: /release/upload
 
       - name: Generate release 
         id: release
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "::set-output name=release_name::Ubuntu_2004_kernel_${{ env.DEB_NAME }}"
+          echo "::set-output name=release_name::${{ env.DEB_NAME }}"
           touch release.txt
           echo "::set-output name=status::success"
 
