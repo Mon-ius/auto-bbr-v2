@@ -107,22 +107,23 @@ jobs:
         working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
           set +e
-          echo $(PWD)
+          echo $(pwd)
           echo "running make olddefconfig ..."
-          make olddefconfig              
-          make ${MAKE_OPTS} prepare 
+          make olddefconfig               > /tmp/make.olddefconfig
+          make ${MAKE_OPTS} prepare         > /tmp/make.prepare
           echo "making..."
-          make ${MAKE_OPTS}         
+          make ${MAKE_OPTS}                 > /tmp/make.default
           echo "making modules ..."
-          make ${MAKE_OPTS} modules 
+          make ${MAKE_OPTS} modules         > /tmp/make.modules
           echo "making install ..."
-          make ${MAKE_OPTS} install 
+          make ${MAKE_OPTS} install         > /tmp/make.install
           echo "making modules_install ..."
-          make ${MAKE_OPTS} modules_install 
+          make ${MAKE_OPTS} modules_install > /tmp/make.modules_install
           set -e
           echo "making tarball ..."
           (cd ${GCE_INSTALL_DIR}; tar -cvzf ${GCE_PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
-          echo $(PWD)
+          echo $(pwd)
+          cd /bbr/${{ env.REPO_NAME }}
           make clean
           git clean -fx
           make -j`nproc` deb-pkg LOCALVERSION=-custom
