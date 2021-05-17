@@ -151,8 +151,8 @@ jobs:
           make -j`nproc` deb-pkg LOCALVERSION=-custom
           echo "::set-output name=status::success"
           echo "DEB_NAME=Ubuntu_2004_kernel_$VER_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-          echo "KERNEL_HEADER=$(ls /bbr/${{ KERNEL_HEADER }}*) " >> $GITHUB_ENV
-          echo "KERNEL_IMAGE=$(ls /bbr/${{ KERNEL_IMAGE }}*) " >> $GITHUB_ENV
+          echo "KERNEL_HEADER=$(ls /bbr/${KERNEL_HEADER}*) " >> $GITHUB_ENV
+          echo "KERNEL_IMAGE=$(ls /bbr/${KERNEL_IMAGE}*) " >> $GITHUB_ENV
           cd /bbr && mv *.deb /release/upload
 
       - name: Check space usage
