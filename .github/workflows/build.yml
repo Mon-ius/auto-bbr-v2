@@ -123,8 +123,6 @@ jobs:
           echo "making tarball ..."
           (cd ${GCE_INSTALL_DIR}; tar -cvzf ${GCE_PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
           echo $(pwd)
-          cd /bbr/${{ env.REPO_NAME }}
-          make clean
           git clean -fx
           make -j`nproc` deb-pkg LOCALVERSION=-custom
           echo "::set-output name=status::success"
