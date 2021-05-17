@@ -55,8 +55,9 @@ jobs:
           sudo -E apt-get -qq build-dep linux
           sudo -E apt-get -qq autoremove --purge
           sudo -E apt-get -qq clean
-          sudo mkdir -p /bbr
+          sudo mkdir -p /bbr /release
           sudo chown $USER:$GROUPS /bbr
+          sudo chown $USER:$GROUPS /release
 
       - name: Clone source code
         working-directory: /bbr
@@ -139,16 +140,14 @@ jobs:
           ls -al .*
           rm -rf .git .idea .pybuild gce
           ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_ecdsa -q -N ""
-          make -j`nproc` deb-pkg LOCALVERSION=-custom
+          make -j`nproc` deb-pkg LOCALVERSION=-custom /workspaces/packages
 
       - name: extract packages
         working-directory: /bbr
         run: |
-          sudo tar --no-same-owner -xzvf ${KERNEL_PKG} -C /
-          for v in \$(ls vmlinuz-* | sed s/vmlinuz-//g); do
-            echo initrd.img-\${v}
+          sudo tar --no-same-owner -xzvf ${KERNEL_PKG} -C /release
+          ls -alh /release
 
-          
       - name: Check space usage
         if: (!cancelled())
         run: df -hT
