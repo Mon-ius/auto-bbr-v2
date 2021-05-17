@@ -123,12 +123,16 @@ jobs:
           echo "making tarball ..."
           (cd ${GCE_INSTALL_DIR}; tar -cvzf ${GCE_PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
           echo $(pwd)
-          git clean -fx
+          mv .config ..
+          make clean
+          mv ../.config .
+          git branch --track experimental origin/experimental
           make -j`nproc` deb-pkg LOCALVERSION=-custom
           echo "::set-output name=status::success"
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+          
           
       - name: List packages
         working-directory: /bbr
