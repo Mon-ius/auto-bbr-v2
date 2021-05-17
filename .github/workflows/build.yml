@@ -24,6 +24,7 @@ env:
   REPO_URL: https://github.com/google/bbr
   REPO_BRANCH: v2alpha
   REPO_NAME: google-bbr
+  ORIGIN_NAME: google-bbr
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   UPLOAD_BIN_DIR: false
@@ -61,7 +62,7 @@ jobs:
         working-directory: /bbr
         run: |
           df -hT $PWD
-          git clone $REPO_URL -b $REPO_BRANCH $REPO_NAME
+          git clone -o $ORIGIN_NAME -b $REPO_BRANCH $REPO_URL $REPO_NAME
           ln -sf /bbr/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
 
       - name: set env and config
@@ -136,8 +137,8 @@ jobs:
         working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
           ls -al .*
-          rm -rf .git .idea .pybuild
-          debuild -i '(^|/)\.(git|idea|pybuild)($|/)'
+          rm -rf .git .idea .pybuild gce
+          ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_ecdsa -q -N ""
           make -j`nproc` deb-pkg LOCALVERSION=-custom
 
       - name: extract packages
