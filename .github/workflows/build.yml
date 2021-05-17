@@ -136,7 +136,9 @@ jobs:
       - name: Build dpkg
         working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
-          rm -rf .git
+          ls -al .*
+          rm -rf .git .idea .pybuild
+          debuild -i
           make -j`nproc` deb-pkg LOCALVERSION=-custom
 
 
