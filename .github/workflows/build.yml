@@ -32,9 +32,9 @@ env:
   UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: false
   LOCALVERSION: ""
-  GCE_PKG_DIR: ""
-  GCE_INSTALL_DIR: ""
-  GCE_BUILD_DIR: ""
+  PKG_DIR: ""
+  INSTALL_DIR: ""
+  BUILD_DIR: ""
   KERNEL_PKG: ""
   MAKE_OPTS: ""
 
@@ -71,23 +71,23 @@ jobs:
         run: |
           BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
           SHA1=`git rev-parse --short HEAD`
-          LOCALVERSION=${BRANCH}_${SHA1}
-          GCE_PKG_DIR=${PWD}/gce/${LOCALVERSION}/pkg
-          GCE_INSTALL_DIR=${PWD}/gce/${LOCALVERSION}/install
-          GCE_BUILD_DIR=${PWD}/gce/${LOCALVERSION}/build
-          KERNEL_PKG=kernel_${LOCALVERSION}.tar.gz2
+          LOCALVERSION=-custom-${BRANCH}-${SHA1}
+          PKG_DIR=/release/${LOCALVERSION}/pkg
+          INSTALL_DIR=/release/${LOCALVERSION}/install
+          BUILD_DIR=/release/${LOCALVERSION}/build
+          KERNEL_PKG=kernel${LOCALVERSION}.tar.gz2
           MAKE_OPTS="-j`nproc` \
                     LOCALVERSION=${LOCALVERSION} \
                     EXTRAVERSION='' \
-                    INSTALL_PATH=${GCE_INSTALL_DIR}/boot \
-                    INSTALL_MOD_PATH=${GCE_INSTALL_DIR}"
+                    INSTALL_PATH=${INSTALL_DIR}/boot \
+                    INSTALL_MOD_PATH=${INSTALL_DIR}"
 
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
           echo "SHA1=$SHA1" >> $GITHUB_ENV
           echo "LOCALVERSION=$LOCALVERSION" >> $GITHUB_ENV
-          echo "GCE_PKG_DIR=$GCE_PKG_DIR" >> $GITHUB_ENV
-          echo "GCE_INSTALL_DIR=$GCE_INSTALL_DIR" >> $GITHUB_ENV
-          echo "GCE_BUILD_DIR=$GCE_BUILD_DIR" >> $GITHUB_ENV
+          echo "PKG_DIR=$PKG_DIR" >> $GITHUB_ENV
+          echo "INSTALL_DIR=$INSTALL_DIR" >> $GITHUB_ENV
+          echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV
           echo "KERNEL_PKG=$KERNEL_PKG" >> $GITHUB_ENV
           echo "MAKE_OPTS=$MAKE_OPTS" >> $GITHUB_ENV
 
@@ -99,9 +99,9 @@ jobs:
           cp config.gce .config
 
           echo "cleaning..."          
-          mkdir -p ${GCE_BUILD_DIR}
-          mkdir -p ${GCE_INSTALL_DIR}/boot
-          mkdir -p ${GCE_PKG_DIR}
+          mkdir -p ${BUILD_DIR}
+          mkdir -p ${INSTALL_DIR}/boot
+          mkdir -p ${PKG_DIR}
           ./scripts/config --disable MODULE_SIG && ./scripts/config --disable DEBUG_INFO
 
       - name: Build kernel-package 
@@ -122,7 +122,7 @@ jobs:
           make ${MAKE_OPTS} modules_install > /tmp/make.modules_install
           set -e
           echo "making tarball ..."
-          (cd ${GCE_INSTALL_DIR}; tar -cvzf ${GCE_PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
+          (cd ${INSTALL_DIR}; tar -cvzf ${PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
           echo "::set-output name=status::success"
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -130,22 +130,22 @@ jobs:
           
           
       - name: List packages
-        working-directory: /bbr
+        working-directory: /release
         run: |
-          cp -r ${GCE_PKG_DIR}/${KERNEL_PKG} /bbr && ls -alh /bbr
+          cp -r ${PKG_DIR}/${KERNEL_PKG} /release && ls -alh /bbr
 
       - name: Build dpkg
         working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
           ls -al .*
-          rm -rf .git .idea .pybuild gce
+          rm -rf .git .idea .pybuild
           ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_ecdsa -q -N ""
-          make -j`nproc` deb-pkg LOCALVERSION=-custom /workspaces/packages
+          make -j`nproc` deb-pkg LOCALVERSION=-custom
 
       - name: extract packages
         working-directory: /bbr
         run: |
-          sudo tar --no-same-owner -xzvf ${KERNEL_PKG} -C /release
+          ls -alh /bbr
           ls -alh /release
 
       - name: Check space usage
