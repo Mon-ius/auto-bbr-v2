@@ -122,8 +122,6 @@ jobs:
           set -e
           echo "making tarball ..."
           (cd ${GCE_INSTALL_DIR}; tar -cvzf ${GCE_PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
-          echo $(pwd)
-          make -j`nproc` deb-pkg LOCALVERSION=-custom
           echo "::set-output name=status::success"
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -134,8 +132,13 @@ jobs:
         working-directory: /bbr
         run: |
           cp -r ${GCE_PKG_DIR}/${KERNEL_PKG} /bbr && ls -alh /bbr
-          echo $DEVICE_NAME
-          echo $FILE_DATE
+
+      - name: Build dpkg
+        working-directory: /bbr/${{ env.REPO_NAME }}
+        run: |
+          rm -rf .git
+          make -j`nproc` deb-pkg LOCALVERSION=-custom
+
 
       - name: extract packages
         working-directory: /bbr
