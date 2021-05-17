@@ -37,6 +37,8 @@ env:
   BUILD_DIR: ""
   KERNEL_PKG: ""
   MAKE_OPTS: ""
+  KERNEL_HEADER: "linux-headers"
+  KERNEL_IMAGE: "linux-image"
 
 jobs:
   build:
@@ -136,7 +138,7 @@ jobs:
       - name: List packages
         working-directory: /release
         run: |
-          cp -r ${PKG_DIR}/${KERNEL_PKG} /release && ls -alh /bbr
+          cp -r ${PKG_DIR}/${KERNEL_PKG} /release && tree /bbr -L 2
 
       - name: Build dpkg
         id: dpkg
@@ -147,38 +149,70 @@ jobs:
           ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_ecdsa -q -N ""
           grep '^VERSION=*\|^PATCHLEVEL=*' Makefile | sed 's/.*=\(.*\)/\1/' | sed -e 's/ //g' | sed ':a;N;$!ba;s/\n/./g' > VER
           make -j`nproc` deb-pkg LOCALVERSION=-custom
-          cd /bbr && mv *.deb /release/upload
           echo "::set-output name=status::success"
           echo "DEB_NAME=Ubuntu_2004_kernel_$VER_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+          echo "KERNEL_HEADER=$(ls /bbr/${{ KERNEL_HEADER }}*) " >> $GITHUB_ENV
+          echo "KERNEL_IMAGE=$(ls /bbr/${{ KERNEL_IMAGE }}*) " >> $GITHUB_ENV
+          cd /bbr && mv *.deb /release/upload
 
       - name: Check space usage
+        working-directory: /release/upload
         if: (!cancelled())
         run: |
           ls -alh /bbr
-          ls -alh /release
+          tree /release
           df -hT
-        
-      - name: Upload packages
-        uses: actions/upload-artifact@main
-        if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_PKG_DIR == 'true'
-        with:
-          name: ${{ env.DEB_NAME }}
-          path: /release/upload
 
+      - name: Upload to WeTransfer
+        working-directory: /release/upload
+        id: wetransfer
+        if: steps.dpkg.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+        run: |
+          curl -fsSL git.io/file-transfer | sh
+          ./transfer wet -s -p 16 --no-progress ${KERNEL_HEADER} 2>&1 | tee wetransfer.log
+          ./transfer wet -s -p 16 --no-progress ${KERNEL_IMAGE} 2>&1 | tee wetransfer.log
+          echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+          echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+          
       - name: Generate release 
         id: release
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
           echo "::set-output name=release_name::${{ env.DEB_NAME }}"
           touch release.txt
+          [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
           echo "::set-output name=status::success"
+
+
+      - name: Upload packages
+        uses: actions/upload-artifact@main
+        if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_PKG_DIR == 'true'
+        with:
+          name: ${{ env.DEB_NAME }}
+          path: /release/
 
       - name: Upload release
         uses: softprops/action-gh-release@v1
         if: steps.release.outputs.status == 'success' && !cancelled()
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.release.outputs.release_name }}
           body_path: release.txt
           files: /release/upload/*
+          
+
+      - name: Delete workflow runs
+        uses: GitRML/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 3
+
+      - name: Remove old Releases
+        uses: dev-drprasad/delete-older-releases@v0.1.0
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        with:
+          keep_latest: 3
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
