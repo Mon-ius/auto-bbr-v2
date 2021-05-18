@@ -32,7 +32,7 @@ env:
   UPLOAD_WETRANSFER: true
   UPLOAD_RELEASE: true
   PGP : true
-  ARCH: ''
+  ARC: ''
   VER: ''
   LOCALVERSION: ''
   PKG_DIR: ''
@@ -79,7 +79,7 @@ jobs:
       - name: set env and config
         working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
-          ARCH=$(dpkg --print-architecture)
+          ARC=$(dpkg --print-architecture)
           VER=$(grep '^VERSION=*\|^PATCHLEVEL=*' Makefile | sed 's/.*=\(.*\)/\1/' | sed -e 's/ //g' | sed ':a;N;$!ba;s/\n/./g')
           BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
           SHA1=`git rev-parse --short HEAD`
@@ -97,7 +97,7 @@ jobs:
                     INSTALL_MOD_PATH=${INSTALL_DIR}"
 
           echo "VER=$VER" >> $GITHUB_ENV
-          echo "ARCH=$ARCH" >> $GITHUB_ENV
+          echo "ARC=$ARC" >> $GITHUB_ENV
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
           echo "SHA1=$SHA1" >> $GITHUB_ENV
           echo "LOCALVERSION=$LOCALVERSION" >> $GITHUB_ENV
@@ -178,9 +178,9 @@ jobs:
       - name: List and package all
         working-directory: /release/upload
         run: |
-          mv $(ls ${KERNEL_HEADER}*) ${KERNEL_HEADER}-${VER}${LOCALVERSION}-$(ARCH).deb
-          mv $(ls ${KERNEL_IMAGE}*) ${KERNEL_IMAGE}-${VER}${LOCALVERSION}-$(ARCH).deb
-          mv $(ls ${KERNEL_LIBC}*) ${KERNEL_LIBC}-${VER}${LOCALVERSION}-$(ARCH).deb
+          mv $(ls ${KERNEL_HEADER}*) ${KERNEL_HEADER}-${VER}${LOCALVERSION}-$(ARC).deb
+          mv $(ls ${KERNEL_IMAGE}*) ${KERNEL_IMAGE}-${VER}${LOCALVERSION}-$(ARC).deb
+          mv $(ls ${KERNEL_LIBC}*) ${KERNEL_LIBC}-${VER}${LOCALVERSION}-$(ARC).deb
           cp $PKG_DIR/$KERNEL_PKG /release/upload
           cp $PKG_DIR/$TEST_PKG /release/upload
           tar -cvzf /release/${RELEASE_TAG}  /release/upload/* --owner=0 --group=0  > /tmp/WeTransfer.tarball
