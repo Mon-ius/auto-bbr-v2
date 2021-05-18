@@ -38,8 +38,8 @@ env:
   BUILD_DIR: ''
   KERNEL_PKG: ''
   MAKE_OPTS: ''
-  KERNEL_HEADER: "linux-headers"
-  KERNEL_IMAGE: "linux-image"
+  KERNEL_HEADER: 'linux-headers'
+  KERNEL_IMAGE: 'linux-image'
 
 jobs:
   build:
@@ -168,8 +168,8 @@ jobs:
         working-directory: /release/upload
         if: (!cancelled())
         run: |
-          echo $KERNEL_HEADER
-          echo $KERNEL_IMAGE
+          echo '${KERNEL_HEADER}'
+          echo '${KERNEL_IMAGE}'
           df -hT
 
       - name: Upload to WeTransfer
