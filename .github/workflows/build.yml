@@ -115,7 +115,6 @@ jobs:
         run: |
           echo "copying config.gce to .config ..."
           cp config.gce .config
-
           echo "cleaning..."          
           mkdir -p ${BUILD_DIR}
           mkdir -p ${INSTALL_DIR}/boot
@@ -136,7 +135,8 @@ jobs:
           set +e
           echo $(pwd)
           echo "running make olddefconfig ..."
-          make olddefconfig               > /tmp/make.olddefconfig
+          tree -L 2
+          make olddefconfig                 > /tmp/make.olddefconfig
           make ${MAKE_OPTS} prepare         > /tmp/make.prepare
           echo "making..."
           make ${MAKE_OPTS}                 > /tmp/make.default
