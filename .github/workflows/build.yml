@@ -40,7 +40,7 @@ env:
   TEST_PKG: ''
   MAKE_OPTS: ''
   KERNEL_PKG: ''
-  WE_PKG: ''
+  RELEASE_TAG: ''
   KERNEL_HEADER: 'linux-headers'
   KERNEL_IMAGE: 'linux-image'
 
@@ -84,9 +84,9 @@ jobs:
           PKG_DIR=/release/${LOCALVERSION}/pkg
           INSTALL_DIR=/release/${LOCALVERSION}/install
           BUILD_DIR=/release/${LOCALVERSION}/build
-          TEST_PKG=test${LOCALVERSION}.tar.gz2
-          WE_PKG=Ubuntu_2004_bbr2_all_$VER_$(date +"%Y%m%d%H%M").tar.gz2
+          TEST_PKG=kernel-test-${BRANCH}-${SHA1}.tar.gz2
           KERNEL_PKG=kernel${LOCALVERSION}.tar.gz2
+          RELEASE_TAG=Ubuntu-2004${LOCALVERSION}.tar.gz2
           MAKE_OPTS="-j`nproc` \
                     LOCALVERSION=${LOCALVERSION} \
                     EXTRAVERSION='' \
@@ -101,7 +101,7 @@ jobs:
           echo "INSTALL_DIR=$INSTALL_DIR" >> $GITHUB_ENV
           echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV
           echo "TEST_PKG=$TEST_PKG" >> $GITHUB_ENV
-          echo "WE_PKG=$WE_PKG" >> $GITHUB_ENV
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
           echo "KERNEL_PKG=$KERNEL_PKG" >> $GITHUB_ENV
           echo "MAKE_OPTS=$MAKE_OPTS" >> $GITHUB_ENV
 
@@ -162,7 +162,6 @@ jobs:
           fi
           make -j`nproc` deb-pkg LOCALVERSION=$LOCALVERSION
           echo "::set-output name=status::success"
-          echo "DEB_NAME=Ubuntu_2004_kernel_$VER_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
           echo "KERNEL_HEADER=$(ls /bbr/${KERNEL_HEADER}*) " >> $GITHUB_ENV
           echo "KERNEL_IMAGE=$(ls /bbr/${KERNEL_IMAGE}*) " >> $GITHUB_ENV
           cd /bbr && mv *.deb /release/upload
@@ -179,7 +178,7 @@ jobs:
         run: |
           cp $PKG_DIR/$KERNEL_PKG /release/upload
           cp $PKG_DIR/$TEST_PKG /release/upload
-          tar -cvzf /release/${WE_PKG}  /release/upload/* --owner=0 --group=0  > /tmp/WeTransfer.tarball
+          tar -cvzf /release/${RELEASE_TAG}  /release/upload/* --owner=0 --group=0  > /tmp/WeTransfer.tarball
           tree /bbr -L 2
           tree /release -L 2
 
@@ -197,7 +196,7 @@ jobs:
         if: steps.dpkg.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
         run: |
           curl -fsSL git.io/file-transfer | sh
-          ./transfer wet -s -p 16 --no-progress ${WE_PKG} 2>&1 | tee wetransfer.log
+          ./transfer wet -s -p 16 --no-progress ${RELEASE_TAG} 2>&1 | tee wetransfer.log
           echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
           echo "::set-output name=url::$(cat wetransfer.log | grep https | grep https | cut -f3 -d" ")"
           cat  wetransfer.log
@@ -206,7 +205,7 @@ jobs:
         id: release
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "::set-output name=release_name::${{ env.DEB_NAME }}"
+          echo "::set-output name=release_name::${{ env.RELEASE_TAG }}"
           touch release.txt
           [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
           echo "::set-output name=status::success"
@@ -216,7 +215,7 @@ jobs:
         uses: actions/upload-artifact@main
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_PKG_DIR == 'true'
         with:
-          name: ${{ env.DEB_NAME }}
+          name: ${{ env.RELEASE_TAG }}
           path: /release/upload
 
       - name: Upload release
