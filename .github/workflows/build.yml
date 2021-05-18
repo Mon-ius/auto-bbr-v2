@@ -32,6 +32,7 @@ env:
   UPLOAD_WETRANSFER: true
   UPLOAD_RELEASE: true
   PGP : true
+  ARCH: ''
   VER: ''
   LOCALVERSION: ''
   PKG_DIR: ''
@@ -43,6 +44,7 @@ env:
   RELEASE_TAG: ''
   KERNEL_HEADER: 'linux-headers'
   KERNEL_IMAGE: 'linux-image'
+  KERNEL_LIBC: 'linux-libc-dev'
 
 jobs:
   build:
@@ -78,6 +80,7 @@ jobs:
         working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
           VER = grep '^VERSION=*\|^PATCHLEVEL=*' Makefile | sed 's/.*=\(.*\)/\1/' | sed -e 's/ //g' | sed ':a;N;$!ba;s/\n/./g'
+          ARCH = $(dpkg --print-architecture)
           BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
           SHA1=`git rev-parse --short HEAD`
           LOCALVERSION=-custom-${BRANCH}-${SHA1}
@@ -86,7 +89,7 @@ jobs:
           BUILD_DIR=/release/${LOCALVERSION}/build
           TEST_PKG=kernel-test-${BRANCH}-${SHA1}.tar.gz2
           KERNEL_PKG=kernel${LOCALVERSION}.tar.gz2
-          RELEASE_TAG=Ubuntu-2004${LOCALVERSION}.tar.gz2
+          RELEASE_TAG=Ubuntu-2004-bbr2${LOCALVERSION}.tar.gz2
           MAKE_OPTS="-j`nproc` \
                     LOCALVERSION=${LOCALVERSION} \
                     EXTRAVERSION='' \
@@ -94,6 +97,7 @@ jobs:
                     INSTALL_MOD_PATH=${INSTALL_DIR}"
 
           echo "VER=$VER" >> $GITHUB_ENV
+          echo "ARCH=$ARCH" >> $GITHUB_ENV
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
           echo "SHA1=$SHA1" >> $GITHUB_ENV
           echo "LOCALVERSION=$LOCALVERSION" >> $GITHUB_ENV
@@ -162,8 +166,6 @@ jobs:
           fi
           make -j`nproc` deb-pkg LOCALVERSION=$LOCALVERSION
           echo "::set-output name=status::success"
-          echo "KERNEL_HEADER=$(ls /bbr/${KERNEL_HEADER}*) " >> $GITHUB_ENV
-          echo "KERNEL_IMAGE=$(ls /bbr/${KERNEL_IMAGE}*) " >> $GITHUB_ENV
           cd /bbr && mv *.deb /release/upload
 
 
@@ -174,8 +176,11 @@ jobs:
           tar -cvzf ${PKG_DIR}/${TEST_PKG}  gtests/net/tcp/bbr/nsperf/* --owner=0 --group=0  > /tmp/test.tarball
 
       - name: List and package all
-        working-directory: /release
+        working-directory: /release/upload
         run: |
+          mv $(ls ${KERNEL_HEADER}*) ${KERNEL_HEADER}-${VER}${LOCALVERSION}-$(ARCH).deb
+          mv $(ls ${KERNEL_IMAGE}*) ${KERNEL_IMAGE}-${VER}${LOCALVERSION}-$(ARCH).deb
+          mv $(ls ${KERNEL_LIBC}*) ${KERNEL_LIBC}-${VER}${LOCALVERSION}-$(ARCH).deb
           cp $PKG_DIR/$KERNEL_PKG /release/upload
           cp $PKG_DIR/$TEST_PKG /release/upload
           tar -cvzf /release/${RELEASE_TAG}  /release/upload/* --owner=0 --group=0  > /tmp/WeTransfer.tarball
@@ -232,14 +237,18 @@ jobs:
       - name: Delete workflow runs
         uses: GitRML/delete-workflow-runs@main
         with:
+          repository: ${{ github.repository }}
           token: ${{ secrets.ACTIONS }}
           retain_days: 1
           keep_minimum_runs: 3
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS }}
 
       - name: Remove old Releases
         uses: dev-drprasad/delete-older-releases@v0.1.0
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
+          token: ${{ secrets.ACTIONS }}
           keep_latest: 3
           delete_tags: true
         env:
