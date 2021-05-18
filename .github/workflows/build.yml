@@ -138,12 +138,6 @@ jobs:
           (cd ${INSTALL_DIR}; tar -cvzf ${PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
           echo "::set-output name=status::success"
           
-      - name: List packages
-        working-directory: /release
-        run: |
-          cp $PKG_DIR/$KERNEL_PKG /release/upload
-          tree /bbr -L 2
-          tree /release -L 2
 
       - name: Build dpkg
         id: dpkg
@@ -164,13 +158,20 @@ jobs:
           echo "KERNEL_IMAGE=$(ls /bbr/${KERNEL_IMAGE}*) " >> $GITHUB_ENV
           cd /bbr && mv *.deb /release/upload
 
+      - name: List packages
+        working-directory: /release
+        run: |
+          cp $PKG_DIR/$KERNEL_PKG /release/upload
+          tree /bbr -L 2
+          tree /release -L 2
+
       - name: Check space usage
         working-directory: /release/upload
         if: (!cancelled())
         run: |
-          echo '${KERNEL_HEADER}'
-          echo '${KERNEL_IMAGE}'
           df -hT
+          echo ${KERNEL_HEADER}
+          echo ${KERNEL_IMAGE}
 
       - name: Upload to WeTransfer
         working-directory: /release/upload
@@ -178,13 +179,15 @@ jobs:
         if: steps.dpkg.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
         run: |
           curl -fsSL git.io/file-transfer | sh
-          ./transfer wet -s -p 16 --no-progress ${KERNEL_HEADER} 2>&1 | tee wetransfer_${KERNEL_HEADER}.log
-          ./transfer wet -s -p 16 --no-progress ${KERNEL_IMAGE} 2>&1 | tee wetransfer_${KERNEL_IMAGE}.log
-          echo "::warning file=wetransfer.com::$(cat wetransfer_${KERNEL_HEADER}.log | grep https)"
-          echo "::warning file=wetransfer.com::$(cat wetransfer_${KERNEL_IMAGE}.log | grep https)"
-          echo "::set-output name=url::$(cat wetransfer_${KERNEL_HEADER}.log | grep https | grep https | cut -f3 -d" ")"
-          echo "::set-output name=url::$(cat wetransfer_${KERNEL_IMAGE}.log | grep https | cut -f3 -d" ")"
-          cat  wetransfer_${KERNEL_HEADER}.log
+          ./transfer wet -s -p 16 --no-progress ${KERNEL_HEADER} 2>&1 | tee wetransfer.log
+          echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+          echo "::set-output name=url_header::$(cat wetransfer.log | grep https | grep https | cut -f3 -d" ")"
+
+          ./transfer wet -s -p 16 --no-progress ${KERNEL_IMAGE} 2>&1 | tee wetransfer.log
+          echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+          echo "::set-output name=url_image::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+
+          cat  wetransfer.log
           
       - name: Generate release 
         id: release
