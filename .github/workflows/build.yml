@@ -47,6 +47,11 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          ref: 'main'
+          token: ${{ secrets.ACTIONS }}
+
       - name: init
         run: |
           sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
