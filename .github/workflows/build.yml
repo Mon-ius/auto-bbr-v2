@@ -79,8 +79,8 @@ jobs:
       - name: set env and config
         working-directory: /bbr/${{ env.REPO_NAME }}
         run: |
-          ARCH = $(dpkg --print-architecture)
-          VER = $(grep '^VERSION=*\|^PATCHLEVEL=*' Makefile | sed 's/.*=\(.*\)/\1/' | sed -e 's/ //g' | sed ':a;N;$!ba;s/\n/./g')
+          ARCH=$(dpkg --print-architecture)
+          VER=$(grep '^VERSION=*\|^PATCHLEVEL=*' Makefile | sed 's/.*=\(.*\)/\1/' | sed -e 's/ //g' | sed ':a;N;$!ba;s/\n/./g')
           BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
           SHA1=`git rev-parse --short HEAD`
           LOCALVERSION=-custom-${BRANCH}-${SHA1}
