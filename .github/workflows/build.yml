@@ -141,7 +141,7 @@ jobs:
       - name: List packages
         working-directory: /release
         run: |
-          cp $GCE_PKG_DIR/$KERNEL_PKG /release/upload
+          cp $PKG_DIR/$KERNEL_PKG /release/upload
           tree /bbr -L 2
           tree /release -L 2
 
@@ -178,11 +178,13 @@ jobs:
         if: steps.dpkg.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
         run: |
           curl -fsSL git.io/file-transfer | sh
-          ./transfer wet -s -p 16 --no-progress ${KERNEL_HEADER} 2>&1 | tee wetransfer.log
-          ./transfer wet -s -p 16 --no-progress ${KERNEL_IMAGE} 2>&1 | tee wetransfer.log
-          echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-          echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-          cat  wetransfer.log
+          ./transfer wet -s -p 16 --no-progress ${KERNEL_HEADER} 2>&1 | tee wetransfer_${KERNEL_HEADER}.log
+          ./transfer wet -s -p 16 --no-progress ${KERNEL_IMAGE} 2>&1 | tee wetransfer_${KERNEL_IMAGE}.log
+          echo "::warning file=wetransfer.com::$(cat wetransfer_${KERNEL_HEADER}.log | grep https)"
+          echo "::warning file=wetransfer.com::$(cat wetransfer_${KERNEL_IMAGE}.log | grep https)"
+          echo "::set-output name=url::$(cat wetransfer_${KERNEL_HEADER}.log | grep https | grep https | cut -f3 -d" ")"
+          echo "::set-output name=url::$(cat wetransfer_${KERNEL_IMAGE}.log | grep https | cut -f3 -d" ")"
+          cat  wetransfer_${KERNEL_HEADER}.log
           
       - name: Generate release 
         id: release
