@@ -7,8 +7,8 @@ Actions for building Linux kernel with &lt;`https://github.com/google/bbr/tree/v
 For example:
 
 ```bash
-wget <https://github.com/Mon-ius/auto-bbr-v2/releases/download/Ubuntu_2004_kernel_202105171751/linux-headers-5.10.0-custom_5.10.0-custom-1_amd64.deb> -O linux-headers-5.10.0-custom.deb
-wget <https://github.com/Mon-ius/auto-bbr-v2/releases/download/Ubuntu_2004_kernel_202105171751/linux-image-5.10.0-custom_5.10.0-custom-1_amd64.deb> -O linux-image-5.10.0-custom.deb
+wget https://github.com/Mon-ius/auto-bbr-v2/releases/download/Ubuntu_2004_kernel_202105171751/linux-headers-5.10.0-custom_5.10.0-custom-1_amd64.deb -O linux-headers-5.10.0-custom.deb
+wget https://github.com/Mon-ius/auto-bbr-v2/releases/download/Ubuntu_2004_kernel_202105171751/linux-image-5.10.0-custom_5.10.0-custom-1_amd64.deb -O linux-image-5.10.0-custom.deb
 dpkg -i linux-headers-5.10.0-custom.deb
 dpkg -i linux-image-5.10.0-custom.deb
 
