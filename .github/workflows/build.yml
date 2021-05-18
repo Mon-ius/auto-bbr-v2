@@ -36,8 +36,10 @@ env:
   PKG_DIR: ''
   INSTALL_DIR: ''
   BUILD_DIR: ''
-  KERNEL_PKG: ''
+  TEST_PKG: ''
   MAKE_OPTS: ''
+  KERNEL_PKG: ''
+  WE_PKG: ''
   KERNEL_HEADER: 'linux-headers'
   KERNEL_IMAGE: 'linux-image'
 
@@ -80,6 +82,7 @@ jobs:
           PKG_DIR=/release/${LOCALVERSION}/pkg
           INSTALL_DIR=/release/${LOCALVERSION}/install
           BUILD_DIR=/release/${LOCALVERSION}/build
+          TEST_PKG=test${LOCALVERSION}.tar.gz2
           KERNEL_PKG=kernel${LOCALVERSION}.tar.gz2
           MAKE_OPTS="-j`nproc` \
                     LOCALVERSION=${LOCALVERSION} \
@@ -94,6 +97,7 @@ jobs:
           echo "INSTALL_DIR=$INSTALL_DIR" >> $GITHUB_ENV
           echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV
           echo "KERNEL_PKG=$KERNEL_PKG" >> $GITHUB_ENV
+          echo "TEST_PKG=$TEST_PKG" >> $GITHUB_ENV
           echo "MAKE_OPTS=$MAKE_OPTS" >> $GITHUB_ENV
 
 
@@ -154,14 +158,24 @@ jobs:
           make -j`nproc` deb-pkg LOCALVERSION=-custom
           echo "::set-output name=status::success"
           echo "DEB_NAME=Ubuntu_2004_kernel_$VER_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+          echo "WE_PKG=Ubuntu_2004_all_$VER_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
           echo "KERNEL_HEADER=$(ls /bbr/${KERNEL_HEADER}*) " >> $GITHUB_ENV
           echo "KERNEL_IMAGE=$(ls /bbr/${KERNEL_IMAGE}*) " >> $GITHUB_ENV
           cd /bbr && mv *.deb /release/upload
 
-      - name: List packages
+
+      - name: Packages test scripts
+        id: test
+        working-directory: /bbr/${{ env.REPO_NAME }}
+        run: 
+          tar -cvzf ${PKG_DIR}/${TEST_PKG}  gtests/net/tcp/bbr/nsperf/* --owner=0 --group=0  > /tmp/test.tarball
+
+      - name: List and package all
         working-directory: /release
         run: |
           cp $PKG_DIR/$KERNEL_PKG /release/upload
+          cp $PKG_DIR/$TEST_PKG /release/upload
+          tar -cvzf /release/${WE_PKG}  /release/upload/* --owner=0 --group=0  > /tmp/WeTransfer.tarball
           tree /bbr -L 2
           tree /release -L 2
 
@@ -174,19 +188,14 @@ jobs:
           echo ${KERNEL_IMAGE}
 
       - name: Upload to WeTransfer
-        working-directory: /release/upload
+        working-directory: /release
         id: wetransfer
         if: steps.dpkg.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
         run: |
           curl -fsSL git.io/file-transfer | sh
-          ./transfer wet -s -p 16 --no-progress ${KERNEL_HEADER} 2>&1 | tee wetransfer.log
+          ./transfer wet -s -p 16 --no-progress ${WE_PKG} 2>&1 | tee wetransfer.log
           echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-          echo "::set-output name=url_header::$(cat wetransfer.log | grep https | grep https | cut -f3 -d" ")"
-
-          ./transfer wet -s -p 16 --no-progress ${KERNEL_IMAGE} 2>&1 | tee wetransfer.log
-          echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-          echo "::set-output name=url_image::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-
+          echo "::set-output name=url::$(cat wetransfer.log | grep https | grep https | cut -f3 -d" ")"
           cat  wetransfer.log
           
       - name: Generate release 
@@ -220,6 +229,7 @@ jobs:
       - name: Delete workflow runs
         uses: GitRML/delete-workflow-runs@main
         with:
+          token: ${{ secrets.ACTIONS }}
           retain_days: 1
           keep_minimum_runs: 3
 

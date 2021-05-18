@@ -29,3 +29,27 @@ sysctl -p
 # check
 sysctl net.ipv4.tcp_congestion_control
 ```
+
+## Test
+
+```bash
+sudo -E apt-get -qq update
+sudo -E apt-get -qq install python netperf gnuplot5-nox pkg-config bison flex
+#scp -r gtests/net/tcp/bbr/nsperf/ ${HOST}:/tmp/
+sudo tar --no-same-owner -xzvf ${TEST_PKG} -C /root/nsperf > /tmp/tar.out.txt
+
+mkdir -p /root/iproute2/
+cd /root/iproute2
+git clone git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+cd iproute2/
+./configure
+make
+
+cd /root/nsperf
+./run_tests.sh
+./graph_tests.sh
+
+cd /root/nsperf
+tests=random_loss ./run_tests.sh
+tests=random_loss ./graph_tests.sh
+```
