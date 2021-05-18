@@ -1,0 +1,19 @@
+ bbr fq
+ Speedtest.net    722.06 Mbps       622.47 Mbps         0.34 ms
+ Shanghai   CT    343.68 Mbps       118.56 Mbps         140.14 ms
+ Shanghai   CU    385.51 Mbps       369.25 Mbps         154.09 ms
+ Guangzhou  CT    357.28 Mbps       27.51 Mbps          175.67 ms
+ Shenzhen   CU    332.64 Mbps       138.22 Mbps         195.79 ms
+ Hongkong   CN    324.24 Mbps       314.20 Mbps         186.60 ms
+ Singapore  SG    343.95 Mbps       161.30 Mbps         172.11 ms
+ Tokyo      JP    290.67 Mbps       12.55 Mbps          108.86 ms
+
+ bbrv2 fq ecn
+ Speedtest.net    818.58 Mbps       814.84 Mbps         0.31 ms
+ Shanghai   CT    268.39 Mbps       239.14 Mbps         140.05 ms
+ Shanghai   CU    392.95 Mbps       405.18 Mbps         154.13 ms
+ Guangzhou  CT    214.15 Mbps       17.99 Mbps          172.67 ms
+ Shenzhen   CU    367.66 Mbps       247.33 Mbps         195.81 ms
+ Hongkong   CN    394.33 Mbps       302.64 Mbps         182.47 ms
+ Singapore  SG    391.25 Mbps       122.76 Mbps         169.66 ms
+ Tokyo      JP    321.08 Mbps       18.96 Mbps          108.75 ms

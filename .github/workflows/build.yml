@@ -32,12 +32,12 @@ env:
   UPLOAD_WETRANSFER: true
   UPLOAD_RELEASE: true
   PGP : true
-  LOCALVERSION: ""
-  PKG_DIR: ""
-  INSTALL_DIR: ""
-  BUILD_DIR: ""
-  KERNEL_PKG: ""
-  MAKE_OPTS: ""
+  LOCALVERSION: ''
+  PKG_DIR: ''
+  INSTALL_DIR: ''
+  BUILD_DIR: ''
+  KERNEL_PKG: ''
+  MAKE_OPTS: ''
   KERNEL_HEADER: "linux-headers"
   KERNEL_IMAGE: "linux-image"
 
@@ -46,10 +46,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          ref: 'master'
+          token: ${{ secrets.ACTIONS }}
 
-      # Runs a single command using the runners shell
       - name: init
         run: |
           sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
@@ -139,7 +141,9 @@ jobs:
       - name: List packages
         working-directory: /release
         run: |
-          cp -r ${PKG_DIR}/${KERNEL_PKG} /release && tree /bbr -L 2
+          cp $GCE_PKG_DIR/$KERNEL_PKG /release/upload
+          tree /bbr -L 2
+          tree /release -L 2
 
       - name: Build dpkg
         id: dpkg
@@ -149,9 +153,9 @@ jobs:
           rm -rf .git .idea .pybuild
           grep '^VERSION=*\|^PATCHLEVEL=*' Makefile | sed 's/.*=\(.*\)/\1/' | sed -e 's/ //g' | sed ':a;N;$!ba;s/\n/./g' > VER
           if  $PGP ; then
-            ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_ecdsa -q -N ""
+            ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_ecdsa -q -N ''
           else
-            sed -ri '/CONFIG_SYSTEM_TRUSTED_KEYS/s/=.+/=""/g' .config
+            sed -ri '/CONFIG_SYSTEM_TRUSTED_KEYS/s/=.+/=''/g' .config
           fi
           make -j`nproc` deb-pkg LOCALVERSION=-custom
           echo "::set-output name=status::success"
@@ -164,8 +168,8 @@ jobs:
         working-directory: /release/upload
         if: (!cancelled())
         run: |
-          ls -alh /bbr
-          tree /release
+          echo $KERNEL_HEADER
+          echo $KERNEL_IMAGE
           df -hT
 
       - name: Upload to WeTransfer
@@ -178,6 +182,7 @@ jobs:
           ./transfer wet -s -p 16 --no-progress ${KERNEL_IMAGE} 2>&1 | tee wetransfer.log
           echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
           echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+          cat  wetransfer.log
           
       - name: Generate release 
         id: release
@@ -194,7 +199,7 @@ jobs:
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_PKG_DIR == 'true'
         with:
           name: ${{ env.DEB_NAME }}
-          path: /release/
+          path: /release/upload
 
       - name: Upload release
         uses: softprops/action-gh-release@v1
