@@ -1,1 +1,1 @@
-python netperf gnuplot-x11 libmnl-dev libbpfcc-dev libdb-dev libcap-dev pkg-config bison flex 
+python netperf gnuplot-x11 pkg-config bison flex libatm1-dev libmnl-dev libbpfcc-dev libdb-dev libcap-dev
