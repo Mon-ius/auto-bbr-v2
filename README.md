@@ -34,7 +34,7 @@ sysctl net.ipv4.tcp_congestion_control
 
 ```bash
 sudo -E apt-get -qq update
-sudo -E apt-get -qq install python netperf gnuplot5-nox pkg-config bison flex
+sudo -E apt-get -qq install $(curl -fsSL git.io/bbrv2-test)
 #scp -r gtests/net/tcp/bbr/nsperf/ ${HOST}:/tmp/
 sudo tar --no-same-owner -xzvf ${TEST_PKG} -C /root/nsperf > /tmp/tar.out.txt
 
