@@ -170,9 +170,9 @@ jobs:
 
       - name: Packages test scripts
         id: test
-        working-directory: /bbr/${{ env.REPO_NAME }}
+        working-directory: /bbr/${{ env.REPO_NAME }}/gtests/net/tcp/bbr/
         run: 
-          tar -cvzf ${PKG_DIR}/${TEST_PKG}  gtests/net/tcp/bbr/nsperf/* --owner=0 --group=0  > /tmp/test.tarball
+          tar -cvzf ${PKG_DIR}/${TEST_PKG} nsperf/* --owner=0 --group=0  > /tmp/test.tarball
 
       - name: List and package all
         working-directory: /release/upload
@@ -210,6 +210,7 @@ jobs:
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
           RELEASE_TAG=$(echo $RELEASE_TAG | sed -e 's/.tar.gz2//g')
+          echo $RELEASE_TAG
           echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
           echo "::set-output name=release_name::${{ env.RELEASE_TAG }}"
           touch release.txt
