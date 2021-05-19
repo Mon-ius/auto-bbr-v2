@@ -209,12 +209,12 @@ jobs:
         id: release
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "RELEASE_TAG=$(echo $RELEASE_TAG | sed -e 's/.tar.gz2//g')" >> $GITHUB_ENV
+          RELEASE_TAG=$(echo $RELEASE_TAG | sed -e 's/.tar.gz2//g')
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
           echo "::set-output name=release_name::${{ env.RELEASE_TAG }}"
           touch release.txt
           [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
           echo "::set-output name=status::success"
-
 
       - name: Upload packages
         uses: actions/upload-artifact@main
@@ -247,6 +247,8 @@ jobs:
         uses: dev-drprasad/delete-older-releases@v0.1.0
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.ACTIONS }}
           keep_latest: 3
           delete_tags: true
         env:
