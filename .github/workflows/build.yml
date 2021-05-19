@@ -55,7 +55,6 @@ jobs:
         with:
           repository: ${{ github.repository }}
           ref: 'main'
-          token: ${{ secrets.ACTIONS }}
 
       - name: init
         run: |
@@ -178,9 +177,9 @@ jobs:
       - name: List and package all
         working-directory: /release/upload
         run: |
-          mv $(ls ${KERNEL_HEADER}*) ${KERNEL_HEADER}-${VER}${LOCALVERSION}-$(ARC).deb
-          mv $(ls ${KERNEL_IMAGE}*) ${KERNEL_IMAGE}-${VER}${LOCALVERSION}-$(ARC).deb
-          mv $(ls ${KERNEL_LIBC}*) ${KERNEL_LIBC}-${VER}${LOCALVERSION}-$(ARC).deb
+          mv $(ls ${KERNEL_HEADER}*) ${KERNEL_HEADER}-${VER}${LOCALVERSION}-${ARC}.deb
+          mv $(ls ${KERNEL_IMAGE}*) ${KERNEL_IMAGE}-${VER}${LOCALVERSION}-${ARC}.deb
+          mv $(ls ${KERNEL_LIBC}*) ${KERNEL_LIBC}-${VER}${LOCALVERSION}-${ARC}.deb
           cp $PKG_DIR/$KERNEL_PKG /release/upload
           cp $PKG_DIR/$TEST_PKG /release/upload
           tar -cvzf /release/${RELEASE_TAG}  /release/upload/* --owner=0 --group=0  > /tmp/WeTransfer.tarball
@@ -210,6 +209,7 @@ jobs:
         id: release
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
+          echo $RELEASE_TAG
           echo "::set-output name=release_name::${{ env.RELEASE_TAG }}"
           touch release.txt
           [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
@@ -238,7 +238,6 @@ jobs:
         uses: GitRML/delete-workflow-runs@main
         with:
           repository: ${{ github.repository }}
-          token: ${{ secrets.ACTIONS }}
           retain_days: 1
           keep_minimum_runs: 3
         env:
@@ -248,7 +247,6 @@ jobs:
         uses: dev-drprasad/delete-older-releases@v0.1.0
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
-          token: ${{ secrets.ACTIONS }}
           keep_latest: 3
           delete_tags: true
         env:
