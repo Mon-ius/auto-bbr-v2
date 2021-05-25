@@ -28,6 +28,13 @@ echo 0 > /sys/module/tcp_bbr2/parameters/ecn_max_rtt_us
 sysctl -p
 # check
 sysctl net.ipv4.tcp_congestion_control
+
+# fq -> cake (if needed) 
+post-up tc qdisc replace dev eth0 root cake rtt 3600ms ethernet besteffort
+
+tc qdisc replace dev eth0 root cake rtt 3600ms ethernet
+# initcwnd -> /etc/network/interfaces
+ip route change $(ip route show | grep -E "^default")  initcwnd 360
 ```
 
 ## Test
