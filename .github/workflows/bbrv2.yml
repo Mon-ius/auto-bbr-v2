@@ -134,7 +134,7 @@ jobs:
           set +e
           echo $(pwd)
           echo "running make olddefconfig ..."
-          tree -L 2
+          tree -L 1
           make olddefconfig                 > /tmp/make.olddefconfig
           make ${MAKE_OPTS} prepare         > /tmp/make.prepare
           echo "making..."
@@ -148,7 +148,6 @@ jobs:
           set -e
           echo "making tarball ..."
           (cd ${INSTALL_DIR}; tar -cvzf ${PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
-          cat .config | grep "cake"
           echo "::set-output name=status::success"
           
 
@@ -158,7 +157,7 @@ jobs:
         run: |
           ls -al .*
           rm -rf .git .idea .pybuild
-          
+          cat .config
           if  $PGP ; then
             ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_ecdsa -q -N ''
           else
