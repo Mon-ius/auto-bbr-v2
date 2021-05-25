@@ -148,6 +148,7 @@ jobs:
           set -e
           echo "making tarball ..."
           (cd ${INSTALL_DIR}; tar -cvzf ${PKG_DIR}/${KERNEL_PKG}  boot/* lib/modules/* --owner=0 --group=0  > /tmp/make.tarball)
+          cat .config | grep "cake"
           echo "::set-output name=status::success"
           
 

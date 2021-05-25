@@ -29,7 +29,7 @@ sysctl -p
 # check
 sysctl net.ipv4.tcp_congestion_control
 
-# fq -> cake (if needed) 
+# fq -> cake (if needed) More on: https://www.bufferbloat.net/projects/codel/wiki/Cake
 post-up tc qdisc replace dev eth0 root cake rtt 3600ms ethernet besteffort
 
 tc qdisc replace dev eth0 root cake rtt 3600ms ethernet
