@@ -163,7 +163,7 @@ jobs:
           else
             sed -ri '/CONFIG_SYSTEM_TRUSTED_KEYS/s/=.+/=''/g' .config
           fi
-          make -j`nproc` deb-pkg LOCALVERSION=$LOCALVERSION
+          sudo make -j`nproc` deb-pkg LOCALVERSION=$LOCALVERSION
           echo "::set-output name=status::success"
           cd /bbr && mv *.deb /release/upload
 
