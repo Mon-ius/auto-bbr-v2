@@ -1,4 +1,4 @@
-name: Build QvTj-6.x - macos
+name: Build QvTj-6.x-macOS
 
 on:
   push:
