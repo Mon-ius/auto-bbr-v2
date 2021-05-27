@@ -15,10 +15,10 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      ssh:
-        description: 'SSH connection to Actions'
+      release:
+        description: 'Release the plugin'
         required: true
-        default: 'true'
+        default: 'false'
 
 env:
   REPO_URL: https://github.com/Qv2ray/QvPlugin-Trojan-Go
@@ -106,10 +106,19 @@ jobs:
 
       - name: macOS - ${{ matrix.qt_version }} - Upload binaries to release
         uses: svenstaro/upload-release-action@v1-release
-        if: github.event_name == 'release' && matrix.platform == 'macos-latest'
+        if: github.event.inputs.release == 'true' && matrix.platform == 'macos-latest'
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.ACTIONS }}
           file: /opt/Release/upload/lib${{ env.REPO_NAME }}.so
           asset_name: ${{ env.REPO_NAME }}.${{ steps.code.outputs.VERSION }}.macOS.Qt6.so
           tag: ${{ steps.previoustag.outputs.tag }}
           overwrite: true
+
+      - name: Delete workflow runs
+        uses: GitRML/delete-workflow-runs@main
+        with:
+          repository: ${{ github.repository }}
+          retain_days: 1
+          keep_minimum_runs: 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS }}
