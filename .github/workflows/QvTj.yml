@@ -45,10 +45,10 @@ jobs:
       - name: init
         run: |
           mkdir -p $HOME/QvTj $HOME/Release/upload
+          ls -al $HOME/QvTj
           echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
 
       - name: Clone source code
-        working-directory: $HOME/QvTj
         run: |
           df -hT $PWD
           git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
