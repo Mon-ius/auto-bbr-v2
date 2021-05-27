@@ -55,6 +55,10 @@ jobs:
           df -hT $PWD
           git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
           git submodule update --init
+          ls -al
+          ls -al $HOME/QvTj/$REPO_NAME
+          ls -al $HOME/QvTj/$REPO_NAME
+          ls -al $GITHUB_WORKSPACE/$REPO_NAME
           ln -sf $HOME/QvTj/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
 
       - name: Install Python 3.8 version
