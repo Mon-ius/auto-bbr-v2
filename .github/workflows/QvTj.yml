@@ -44,20 +44,18 @@ jobs:
 
       - name: init
         run: |
-          mkdir -p $HOME/QvTj $HOME/Release/upload
-          ls -al $HOME/QvTj
+          sudo mkdir -p /opt/QvTj /opt/Release/upload
+          sudo chown $USER:$GROUPS /opt/QvTj
+          sudo chown -R $USER:$GROUPS /opt/Release
           echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
 
       - name: Clone source code
+        working-directory: /opt/QvTj
         run: |
           df -hT $PWD
           git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
           git submodule update --init
-          ls -al
-          ls -al $HOME/QvTj/$REPO_NAME
-          ls -al $HOME/QvTj/$REPO_NAME
-          ls -al $GITHUB_WORKSPACE/$REPO_NAME
-          ln -sf $HOME/QvTj/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
+          ln -sf /opt/QvTj/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
 
       - name: Install Python 3.8 version
         uses: actions/setup-python@v1
@@ -80,7 +78,7 @@ jobs:
 
 # --------------------------------------------------------
       - name: macOS - ${{ matrix.qt_version }} - Generate Dependencies and Build
-        working-directory: $HOME/QvTj/${{ env.REPO_NAME }}
+        working-directory: /opt/QvTj/${{ env.REPO_NAME }}
         shell: bash
         if: matrix.platform == 'macos-latest'
         run: |
