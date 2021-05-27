@@ -45,13 +45,13 @@ jobs:
       - name: init
         run: |
           sudo mount -uw /
-          sudo mkdir -p /QvTj /release/upload
-          sudo chown $USER:$GROUPS /QvTj
-          sudo chown -R $USER:$GROUPS /release
+          sudo mkdir -p $HOME/QvTj $HOME/Release/upload
+          sudo chown $USER:$GROUPS $HOME/QvTj
+          sudo chown -R $USER:$GROUPS $HOME/Release
           echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
 
       - name: Clone source code
-        working-directory: /QvTj
+        working-directory: $HOME/QvTj
         run: |
           df -hT $PWD
           git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
@@ -79,7 +79,7 @@ jobs:
 
 # --------------------------------------------------------
       - name: macOS - ${{ matrix.qt_version }} - Generate Dependencies and Build
-        working-directory: /QvTj/${{ env.REPO_NAME }}
+        working-directory: $HOME/QvTj/${{ env.REPO_NAME }}
         shell: bash
         if: matrix.platform == 'macos-latest'
         run: |
