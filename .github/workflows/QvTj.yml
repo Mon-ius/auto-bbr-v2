@@ -48,7 +48,6 @@ jobs:
           sudo mkdir -p /opt/QvTj /opt/Release/upload
           sudo chown $USER:$GROUPS /opt/QvTj
           sudo chown -R $USER:$GROUPS /opt/Release
-          echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
 
       - name: Clone source code
         working-directory: /opt/QvTj
@@ -57,6 +56,8 @@ jobs:
           git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
           ln -sf /opt/QvTj/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
           cd $GITHUB_WORKSPACE/$REPO_NAME && git submodule update --init
+          echo "VERSION=$(cat %.hpp | grep -Eo "v[0-9].[0-9].[0-9]")" >> $GITHUB_ENV
+
 
       - name: Install Python 3.8 version
         uses: actions/setup-python@v1
@@ -77,7 +78,6 @@ jobs:
           arch: ${{ matrix.qtarch }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
-# --------------------------------------------------------
       - name: macOS - ${{ matrix.qt_version }} - Generate Dependencies and Build
         working-directory: /opt/QvTj/${{ env.REPO_NAME }}
         shell: bash
@@ -87,9 +87,9 @@ jobs:
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release -DQVPLUGIN_USE_QT6=ON
           cmake --build . --parallel $(sysctl -n hw.logicalcpu)
+          mv %.so lib${{ env.REPO_NAME }}.so
           tree -L 2
 
-# --------------------------------------------------------
       - name: macOS - ${{ matrix.qt_version }} - Uploading Artifact
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@master
