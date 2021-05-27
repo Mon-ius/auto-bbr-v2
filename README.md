@@ -4,13 +4,15 @@ Actions for building Linux kernel with &lt;`https://github.com/google/bbr/tree/v
 
 ## Usage
 
-For example:
-
 ```bash
-wget https://github.com/Mon-ius/auto-bbr-v2/releases/download/Ubuntu_2004_kernel_202105171751/linux-headers-5.10.0-custom_5.10.0-custom-1_amd64.deb -O linux-headers-5.10.0-custom.deb
-wget https://github.com/Mon-ius/auto-bbr-v2/releases/download/Ubuntu_2004_kernel_202105171751/linux-image-5.10.0-custom_5.10.0-custom-1_amd64.deb -O linux-image-5.10.0-custom.deb
-dpkg -i linux-headers-5.10.0-custom.deb
-dpkg -i linux-image-5.10.0-custom.deb
+curl -s https://api.github.com/repos/Mon-ius/auto-bbr-v2/releases/latest \
+| grep "browser_download_url.*deb" | grep -E '*linux-image*|*linux-headers*' \
+| cut -d : -f 2,3 \
+| tr -d \" \
+| wget -qi -
+
+dpkg -i linux-headers-*.deb
+dpkg -i linux-image-*.deb
 
 # remove old
 apt purge -y "linux-image-4.9.0-9-amd64"
