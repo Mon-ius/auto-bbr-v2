@@ -3,12 +3,8 @@ name: Build QvTj-6.x-macOS
 on:
   push:
     branches: 
-      - main
       - v2alpha
-  pull_request:
-    branches: 
-      - main
-      - v2alpha
+
   schedule:
     - cron: '30 6 * * 1'
       
@@ -24,7 +20,6 @@ env:
   REPO_URL: https://github.com/Qv2ray/QvPlugin-Trojan-Go
   REPO_BRANCH: dev
   REPO_NAME: QvTj
-  VERSION: ''
 
 jobs:
   build:
@@ -47,25 +42,6 @@ jobs:
         with:
           fallback: 1.0.0
 
-      - name: init
-        run: |
-          brew install tree
-          sudo mkdir -p /opt/QvTj /opt/Release/upload
-          sudo chown $USER:$GROUPS /opt/QvTj
-          sudo chown -R $USER:$GROUPS /opt/Release
-
-      - name: Clone source code
-        working-directory: /opt/QvTj
-        id: code
-        run: |
-          df -hT $PWD
-          git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
-          ln -sf /opt/QvTj/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
-          cd $GITHUB_WORKSPACE/$REPO_NAME && git submodule update --init
-          # echo "VERSION=$(set -- *.hpp; cat "$1" | grep -Eo "v[0-9].[0-9].[0-9]")" >> $GITHUB_ENV
-          echo ::set-output name=VERSION::$(set -- *.hpp; cat "$1" | grep -Eo "v[0-9].[0-9].[0-9]")
-          echo ::set-output name=SHA::$(git rev-parse --short HEAD)
-
       - name: Install Python 3.8 version
         uses: actions/setup-python@v1
         with:
@@ -85,10 +61,27 @@ jobs:
           arch: ${{ matrix.qtarch }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
+      - name: init
+        run: |
+          brew install tree
+          sudo mkdir -p /opt/QvTj /opt/Release/upload
+          sudo chown $USER:$GROUPS /opt/QvTj
+          sudo chown -R $USER:$GROUPS /opt/Release
+
+      - name: Clone source code
+        working-directory: /opt/QvTj
+        id: code
+        run: |
+          df -hT $PWD
+          git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
+          ln -sf /opt/QvTj/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
+          cd $GITHUB_WORKSPACE/$REPO_NAME && git submodule update --init
+          echo ::set-output name=VERSION::$(set -- *.hpp; cat "$1" | grep -Eo "v[0-9].[0-9].[0-9]")
+          echo ::set-output name=SHA::$(git rev-parse --short HEAD)
+
       - name: macOS - ${{ matrix.qt_version }} - Generate Dependencies and Build
         working-directory: /opt/QvTj/${{ env.REPO_NAME }}
         shell: bash
-        if: matrix.platform == 'macos-latest'
         run: |
           mkdir build
           cd build
@@ -96,10 +89,7 @@ jobs:
           cmake --build . --parallel $(sysctl -n hw.logicalcpu)
           mv $(set -- *.so; echo "$1") /opt/Release/upload/lib${{ env.REPO_NAME }}.so
 
-
-
       - name: macOS - ${{ matrix.qt_version }} - Uploading Artifact
-        if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@master
         with:
           name: ${{ env.REPO_NAME }}-${{ steps.code.outputs.SHA }}.macOS.Qt${{ matrix.qt_version }}.so
