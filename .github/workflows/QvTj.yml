@@ -37,10 +37,15 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.2.0
         with:
-          repository: ${{ github.repository }}
-          ref: 'main'
+          fetch-depth: 0
+
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1.0.0
 
       - name: init
         run: |
@@ -91,11 +96,7 @@ jobs:
           cmake --build . --parallel $(sysctl -n hw.logicalcpu)
           mv $(set -- *.txt; echo "$1") /opt/Release/upload/lib${{ env.REPO_NAME }}.so
 
-      - name: 'Get Previous tag'
-        id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: 1.0.0
+
 
       - name: macOS - ${{ matrix.qt_version }} - Uploading Artifact
         if: matrix.platform == 'macos-latest'
