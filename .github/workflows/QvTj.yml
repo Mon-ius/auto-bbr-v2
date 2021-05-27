@@ -1,0 +1,109 @@
+name: Build QvTj Qt6 - macos
+
+on:
+  push:
+    branches: 
+      - main
+      - v2alpha
+  pull_request:
+    branches: 
+      - main
+      - v2alpha
+  schedule:
+    - cron: '30 6 * * 1'
+      
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: true
+        default: 'true'
+
+env:
+  REPO_URL: https://github.com/Qv2ray/QvPlugin-Trojan-Go
+  REPO_BRANCH: dev
+  REPO_NAME: QvTj
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        qt_version: [6.1.0]
+        platform: [macos-latest]
+      fail-fast: false
+        
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          ref: 'main'
+      
+      - name: Get the version
+        id: get_version
+        shell: bash
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+
+      - name: Get Plugin Name
+        id: get_name
+        shell: bash
+        run: echo ::set-output name=NAME::QvTj
+
+      - name: Clone source code
+        working-directory: /QvTj
+        run: |
+          df -hT $PWD
+          git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
+          git submodule update --init
+          ln -sf /QvTj/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
+
+      - name: Install Python 3.8 version
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.8'
+
+      - name: Cache Qt
+        id: cache-qt
+        uses: actions/cache@v1
+        with:
+          path: ../Qt
+          key: QtCache-${{ matrix.platform }}-${{ matrix.qt_version }}
+
+      - name: Installing Qt - ${{ matrix.arch }}
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: ${{ matrix.qt_version }}
+          arch: ${{ matrix.qtarch }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+
+# --------------------------------------------------------
+      - name: macOS - ${{ matrix.qt_version }} - Generate Dependencies and Build
+        working-directory: /QvTj/${{ env.REPO_NAME }}
+        shell: bash
+        if: matrix.platform == 'macos-latest'
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DQVPLUGIN_USE_QT6=ON
+          cmake --build . --parallel $(sysctl -n hw.logicalcpu)
+          tree -L 2
+
+# --------------------------------------------------------
+      - name: macOS - ${{ matrix.qt_version }} - Uploading Artifact
+        if: matrix.platform == 'macos-latest'
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ steps.get_name.outputs.NAME }}-${{ github.sha }}.macOS.Qt${{ matrix.qt_version }}.so
+          path: build/lib${{ steps.get_name.outputs.NAME }}.so
+
+      - name: macOS - ${{ matrix.qt_version }} - Upload binaries to release
+        uses: svenstaro/upload-release-action@v1-release
+        if: github.event_name == 'release' && matrix.platform == 'macos-latest'
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/lib${{ steps.get_name.outputs.NAME }}.so
+          asset_name: ${{ steps.get_name.outputs.NAME }}.${{ steps.get_version.outputs.VERSION }}.macOS.Qt6.so
+          tag: ${{ github.ref }}
+          overwrite: true

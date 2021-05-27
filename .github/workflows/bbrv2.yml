@@ -9,7 +9,6 @@ on:
       - main
       - v2alpha
   schedule:
-    # * is a special character in YAML so you have to quote this string
     - cron: '30 6 * * 1'
     
   repository_dispatch:
@@ -25,8 +24,6 @@ env:
   REPO_BRANCH: v2alpha
   REPO_NAME: google-bbr
   ORIGIN_NAME: google-bbr
-  FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .config
   UPLOAD_PKG_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_WETRANSFER: true
