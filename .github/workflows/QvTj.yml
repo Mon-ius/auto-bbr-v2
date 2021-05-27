@@ -44,6 +44,7 @@ jobs:
 
       - name: init
         run: |
+          brew install tree
           sudo mkdir -p /opt/QvTj /opt/Release/upload
           sudo chown $USER:$GROUPS /opt/QvTj
           sudo chown -R $USER:$GROUPS /opt/Release
