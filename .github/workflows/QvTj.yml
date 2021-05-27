@@ -1,4 +1,4 @@
-name: Build QvTj Qt6 - macos
+name: Build QvTj-6.x - macos
 
 on:
   push:
@@ -44,6 +44,7 @@ jobs:
 
       - name: init
         run: |
+          sudo mount -uw /
           sudo mkdir -p /QvTj /release/upload
           sudo chown $USER:$GROUPS /QvTj
           sudo chown -R $USER:$GROUPS /release
