@@ -30,9 +30,9 @@ jobs:
     strategy:
       matrix:
         arch: [x64]
-        ui_type: [QWidget, QML]
+        ui_type: [QWidget, QML, Original]
         build_type: [Release]
-        qt_version: [6.1.0]
+        qt_version: [6.1.0, 5.15.0]
         platform: [macos-latest]
       fail-fast: false
         
@@ -98,9 +98,30 @@ jobs:
           echo ::set-output name=VERSION::"v3.0.0"
           echo ::set-output name=SHA::$(git rev-parse --short HEAD)
 
+      - name: macOS - ${{ matrix.qt_version }} - ORIGIN
+        working-directory: /opt/QvDev/${{ env.REPO_NAME }}
+        shell: bash
+        if: matrix.ui_type == 'Original' && matrix.qt_version !='6.1.0'
+        env:
+          PKG_CONFIG_PATH: /usr/local/opt/openssl@1.1/lib/pkgconfig
+        run: |
+          mkdir build && cd build
+          cmake .. -GNinja \
+            -DCMAKE_INSTALL_PREFIX=installed \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+            -DDS_STORE_SCRIPT=ON \
+            -DQV2RAY_DEFAULT_VASSETS_PATH=/usr/local/opt/v2ray/share/v2ray \
+            -DQV2RAY_DEFAULT_VCORE_PATH=/usr/local/opt/v2ray/bin/v2ray
+          cmake --build . --parallel $(sysctl -n hw.logicalcpu)
+          sudo cmake --install .
+          appdmg ../assets/package_dmg.json ../QvDev.dmg
+          mv ../QvDev.dmg /opt/Release/upload
+
       - name: macOS - ${{ matrix.qt_version }} - DEV
         working-directory: /opt/QvDev/${{ env.REPO_NAME }}
         shell: bash
+        if: matrix.ui_type != 'Original' && matrix.qt_version =='6.1.0'
         env:
           PKG_CONFIG_PATH: /usr/local/opt/openssl@1.1/lib/pkgconfig
         run: |

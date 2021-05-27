@@ -25,7 +25,7 @@ jobs:
   build:
     strategy:
       matrix:
-        qt_version: [6.1.0]
+        qt_version: [6.1.0, 5.15.0]
         platform: [macos-latest]
       fail-fast: false
         
