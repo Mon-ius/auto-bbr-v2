@@ -6,7 +6,7 @@ Actions for building Linux kernel with &lt;`https://github.com/google/bbr/tree/v
 
 ```bash
 curl -s https://api.github.com/repos/Mon-ius/auto-bbr-v2/releases/latest \
-| grep "browser_download_url.*deb" | grep -E '*linux-image*|*linux-headers*' \
+| grep "browser_download_url.*deb" | grep -E "linux-image|linux-headers" \
 | cut -d : -f 2,3 \
 | tr -d \" \
 | wget -qi -

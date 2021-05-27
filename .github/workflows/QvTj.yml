@@ -49,7 +49,6 @@ jobs:
 
       - name: init
         run: |
-          echo ${steps.previoustag.outputs.tag}
           brew install tree
           sudo mkdir -p /opt/QvTj /opt/Release/upload
           sudo chown $USER:$GROUPS /opt/QvTj
