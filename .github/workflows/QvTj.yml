@@ -52,7 +52,7 @@ jobs:
       - name: Clone source code
         working-directory: $HOME/QvTj
         run: |
-          df -hT $PWD
+          echo $PWD
           git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
           git submodule update --init
           ls -al
