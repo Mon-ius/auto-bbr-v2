@@ -219,7 +219,7 @@ jobs:
         uses: actions/upload-artifact@main
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_PKG_DIR == 'true'
         with:
-          name: bbr_v2alpha_"$(date +'%Y%m%d%H%M')"
+          name: ${{ env.release_name }}
           path: /release/upload
 
       - name: Upload release
