@@ -24,6 +24,7 @@ env:
   REPO_URL: https://github.com/Qv2ray/QvPlugin-Trojan-Go
   REPO_BRANCH: dev
   REPO_NAME: QvTj
+  VERSION: ''
 
 jobs:
   build:
@@ -43,21 +44,10 @@ jobs:
 
       - name: init
         run: |
-          sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
           sudo mkdir -p /QvTj /release/upload
           sudo chown $USER:$GROUPS /QvTj
           sudo chown -R $USER:$GROUPS /release
           echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
-
-      - name: Get the version
-        id: get_version
-        shell: bash
-        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-
-      - name: Get Plugin Name
-        id: get_name
-        shell: bash
-        run: echo ::set-output name=NAME::QvTj
 
       - name: Clone source code
         working-directory: /QvTj
