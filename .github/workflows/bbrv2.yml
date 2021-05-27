@@ -219,7 +219,7 @@ jobs:
         uses: actions/upload-artifact@main
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_PKG_DIR == 'true'
         with:
-          name: ${{ env.release_name }}
+          name: ${{ steps.release.outputs.release_name }}
           path: /release/upload
 
       - name: Upload release
