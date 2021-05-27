@@ -114,6 +114,7 @@ jobs:
         run: |
           echo "copying config.gce to .config ..."
           cp config.gce .config
+          echo "CONFIG_NET_SCH_CAKE=m" >> .config
           echo "cleaning..."          
           mkdir -p ${BUILD_DIR}
           mkdir -p ${INSTALL_DIR}/boot
@@ -218,7 +219,7 @@ jobs:
         uses: actions/upload-artifact@main
         if: steps.dpkg.outputs.status == 'success' && steps.package.outputs.status == 'success' && env.UPLOAD_PKG_DIR == 'true'
         with:
-          name: bbr_v2alpha_$(date +'%Y%m%d%H%M')
+          name: bbr_v2alpha_"$(date +'%Y%m%d%H%M')"
           path: /release/upload
 
       - name: Upload release
@@ -237,7 +238,7 @@ jobs:
         with:
           repository: ${{ github.repository }}
           retain_days: 1
-          keep_minimum_runs: 3
+          keep_minimum_runs: 1
         env:
           GITHUB_TOKEN: ${{ secrets.ACTIONS }}
 
@@ -245,7 +246,7 @@ jobs:
         uses: dev-drprasad/delete-older-releases@v0.1.0
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
-          keep_latest: 3
+          keep_latest: 1
           delete_tags: true
         env:
           GITHUB_TOKEN: ${{ secrets.ACTIONS }}
