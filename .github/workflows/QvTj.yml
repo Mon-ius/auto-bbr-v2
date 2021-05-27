@@ -44,8 +44,6 @@ jobs:
 
       - name: init
         run: |
-          sudo spctl --master-disable
-          sudo mount -uw /
           sudo mkdir -p $HOME/QvTj $HOME/Release/upload
           sudo chown $USER:$GROUPS $HOME/QvTj
           sudo chown -R $USER:$GROUPS $HOME/Release
