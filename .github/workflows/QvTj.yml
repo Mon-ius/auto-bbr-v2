@@ -87,7 +87,7 @@ jobs:
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release -DQVPLUGIN_USE_QT6=ON
           cmake --build . --parallel $(sysctl -n hw.logicalcpu)
-          mv $(set -- *.txt; echo "$1") lib${{ env.REPO_NAME }}.so
+          mv $(set -- *.txt; echo "$1") /opt/Release/upload/lib${{ env.REPO_NAME }}.so
           tree -L 2
 
       - name: macOS - ${{ matrix.qt_version }} - Uploading Artifact
@@ -95,14 +95,14 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: ${{ env.REPO_NAME }}-${{ github.sha }}.macOS.Qt${{ matrix.qt_version }}.so
-          path: build/lib${{ env.REPO_NAME }}.so
+          path: /opt/Release/upload/lib${{ env.REPO_NAME }}.so
 
       - name: macOS - ${{ matrix.qt_version }} - Upload binaries to release
         uses: svenstaro/upload-release-action@v1-release
         if: github.event_name == 'release' && matrix.platform == 'macos-latest'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/lib${{ env.REPO_NAME }}.so
+          file: /opt/Release/upload/lib${{ env.REPO_NAME }}.so
           asset_name: ${{ env.REPO_NAME }}.${{ env.VERSION }}.macOS.Qt6.so
           tag: ${{ github.ref }}
           overwrite: true
