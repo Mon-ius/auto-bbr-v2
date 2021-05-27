@@ -40,7 +40,15 @@ jobs:
         with:
           repository: ${{ github.repository }}
           ref: 'main'
-      
+
+      - name: init
+        run: |
+          sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+          sudo mkdir -p /QvTj /release/upload
+          sudo chown $USER:$GROUPS /QvTj
+          sudo chown -R $USER:$GROUPS /release
+          echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
+
       - name: Get the version
         id: get_version
         shell: bash
@@ -95,15 +103,15 @@ jobs:
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@master
         with:
-          name: ${{ steps.get_name.outputs.NAME }}-${{ github.sha }}.macOS.Qt${{ matrix.qt_version }}.so
-          path: build/lib${{ steps.get_name.outputs.NAME }}.so
+          name: ${{ env.REPO_NAME }}-${{ github.sha }}.macOS.Qt${{ matrix.qt_version }}.so
+          path: build/lib${{ env.REPO_NAME }}.so
 
       - name: macOS - ${{ matrix.qt_version }} - Upload binaries to release
         uses: svenstaro/upload-release-action@v1-release
         if: github.event_name == 'release' && matrix.platform == 'macos-latest'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/lib${{ steps.get_name.outputs.NAME }}.so
-          asset_name: ${{ steps.get_name.outputs.NAME }}.${{ steps.get_version.outputs.VERSION }}.macOS.Qt6.so
+          file: build/lib${{ env.REPO_NAME }}.so
+          asset_name: ${{ env.REPO_NAME }}.${{ env.VERSION }}.macOS.Qt6.so
           tag: ${{ github.ref }}
           overwrite: true
