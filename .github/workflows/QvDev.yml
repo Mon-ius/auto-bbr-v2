@@ -126,10 +126,6 @@ jobs:
         env:
           PKG_CONFIG_PATH: /usr/local/opt/openssl@1.1/lib/pkgconfig
         run: |
-          sed -i '' '262i\
-          find_package(Qt6 COMPONENTS Core5Compat REQUIRED)' CMakeLists.txt
-          sed -i '' '301i\
-          list(APPEND QV2RAY_QT_LIBS Qt6::Core5Compat)' CMakeLists.txt
           mkdir build-dev && cd build-dev
           cmake .. -GNinja \
             -DCMAKE_INSTALL_PREFIX=installed \
