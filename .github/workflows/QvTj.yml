@@ -81,6 +81,18 @@ jobs:
 
       - name: macOS - ${{ matrix.qt_version }} - Generate Dependencies and Build
         working-directory: /opt/QvTj/${{ env.REPO_NAME }}
+        if: matrix.qt_version !='6.1.0'
+        shell: bash
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --parallel $(sysctl -n hw.logicalcpu)
+          mv $(set -- *.so; echo "$1") /opt/Release/upload/lib${{ env.REPO_NAME }}.so
+
+      - name: macOS - ${{ matrix.qt_version }} - Generate Dependencies and Build
+        working-directory: /opt/QvTj/${{ env.REPO_NAME }}
+        if: matrix.qt_version =='6.1.0'
         shell: bash
         run: |
           mkdir build
