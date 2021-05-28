@@ -126,9 +126,9 @@ jobs:
         env:
           PKG_CONFIG_PATH: /usr/local/opt/openssl@1.1/lib/pkgconfig
         run: |
-          mkdir build-dev && cd build-dev
           sed -i '' '301i\
           list(APPEND QV2RAY_QT_LIBS Qt6::Core5Compat)' CMakeLists.txt
+          mkdir build-dev && cd build-dev
           cmake .. -GNinja \
             -DCMAKE_INSTALL_PREFIX=installed \
             -DQV2RAY_UI_TYPE=${{ matrix.ui_type }} \
