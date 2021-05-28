@@ -73,6 +73,7 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: init
+        continue-on-error: true
         run: |
           npm install -g appdmg
           brew install tree protobuf grpc ninja pkg-config openssl
@@ -84,7 +85,7 @@ jobs:
           cd macdeployqt-patched
           mkdir build; cd build;
           cmake .. -DCMAKE_BUILD_TYPE=Release; cmake --build .
-          cp -v ./macdeployqt ${Qt6_DIR}/bin/macdeployqt
+          cp -v ./macdeployqt ${Qt6_DIR}/bin/macdeployqt | cp -v ./macdeployqt ${Qt5_DIR}/bin/macdeployqt
 
       - name: Clone source code
         working-directory: /opt/QvDev
