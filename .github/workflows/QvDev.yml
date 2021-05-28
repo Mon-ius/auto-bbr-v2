@@ -21,7 +21,7 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/Qv2ray/Qv2ray
+  REPO_URL: https://github.com/MonCoeus/Qv2ray
   REPO_BRANCH: dev
   REPO_NAME: QvDev
 
@@ -110,7 +110,7 @@ jobs:
           cmake .. -GNinja \
             -DCMAKE_INSTALL_PREFIX=installed \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
             -DDS_STORE_SCRIPT=ON \
             -DQV2RAY_DEFAULT_VASSETS_PATH=/usr/local/opt/v2ray/share/v2ray \
             -DQV2RAY_DEFAULT_VCORE_PATH=/usr/local/opt/v2ray/bin/v2ray
