@@ -21,7 +21,7 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/MonCoeus/Qv2ray
+  REPO_URL: https://github.com/Qv2ray/Qv2ray
   REPO_BRANCH: dev
   REPO_NAME: QvDev
 
