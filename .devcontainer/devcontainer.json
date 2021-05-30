@@ -1,5 +1,5 @@
 {
-    "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:0-12",
-    "extensions": ["dbaeumer.vscode-eslint"],
+    "image": "mcr.microsoft.com/vscode/devcontainers/rust",
+    "extensions": ["matklad.rust-analyzer","serayuzgur.crates","bungcip.better-toml"],
     "forwardPorts": [3000]
   }
