@@ -3,12 +3,8 @@ name: Build Qv-6.x-macOS
 on:
   push:
     branches: 
-      - main
       - v2alpha
-  pull_request:
-    branches: 
-      - main
-      - v2alpha
+
   schedule:
     - cron: '30 6 * * 1'
       
