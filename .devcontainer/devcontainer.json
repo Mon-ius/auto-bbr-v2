@@ -1,5 +1,9 @@
 {
-    "image": "mcr.microsoft.com/vscode/devcontainers/rust",
-    "extensions": ["matklad.rust-analyzer","serayuzgur.crates","bungcip.better-toml"],
-    "forwardPorts": [3000]
-  }
+  "name": "Code_Space_container_experiment",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "the-name-of-the-service-you-want-to-work-with-in-vscode",
+  "workspaceFolder": "~/Code_Space_exp",
+  "shutdownAction": "stopCompose",
+  "extensions": ["matklad.rust-analyzer","serayuzgur.crates","bungcip.better-toml"],
+  "forwardPorts": [3000]
+}

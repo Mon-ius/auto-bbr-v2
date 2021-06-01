@@ -23,11 +23,10 @@ env:
   REPO_NAME: lede
   WORK_DIR: /lede
   FEEDS_CONF: feeds.conf.default
-  UPLOAD_BIN_DIR: false
+  UPLOAD_PKG_DIR: true
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: false
-  UPLOAD_WETRANSFER: false
-  UPLOAD_RELEASE: false
+  UPLOAD_WETRANSFER: true
+  UPLOAD_RELEASE: true
 
 jobs:
   build:
@@ -52,19 +51,18 @@ jobs:
           sudo chown -R $USER:$GROUPS /release
 
       - name: Clone source code
-        working-directory: ${{ env.WORK_DIR }}
         run: |
           git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
-          ln -sf $WORK_DIR/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
+          ln -sf $GITHUB_WORKSPACE/$REPO_NAME $WORK_DIR
 
       - name: Load feeds && configuration
-        working-directory: ${{ env.WORK_DIR }}/${{REPO_NAME}}
+        working-directory: ${{ env.WORK_DIR }}
         run: |
           ./scripts/feeds update -a && ./scripts/feeds install -a
           curl -L $CONFIG_FILE_SOURCE -o .config
 
       - name: Download package
-        working-directory: ${{ env.WORK_DIR }}/${{REPO_NAME}}
+        working-directory: ${{ env.WORK_DIR }}
         id: package
         run: |
           make defconfig
@@ -73,7 +71,7 @@ jobs:
           find dl -size -1024c -exec rm -f {} \;
 
       - name: Compile the firmware
-        working-directory: ${{ env.WORK_DIR }}/${{REPO_NAME}}
+        working-directory: ${{ env.WORK_DIR }}
         id: compile
         run: |
           echo -e "$(nproc) thread compile"
@@ -84,7 +82,7 @@ jobs:
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
       - name: Compile the firmware
-        working-directory: ${{ env.WORK_DIR }}/${{REPO_NAME}}
+        working-directory: ${{ env.WORK_DIR }}
         id: list
         run: |
           cd bin
