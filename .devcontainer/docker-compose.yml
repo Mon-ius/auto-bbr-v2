@@ -2,13 +2,6 @@ version: '3'
 services:
     container-1:
         image: ubuntu:bionic
-        volumes:
-            # Mount the root folder that contains .git
-            - .:/workspace:cached
-        command: /bin/sh -c "while sleep 1000; do :; done"
-        links:
-            - container-2
-    default:
         env_file: devcontainer.env
         environment:
         - YOUR_ENV_VAR_NAME=your-value-goes-here

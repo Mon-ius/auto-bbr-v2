@@ -7,5 +7,4 @@
   "shutdownAction": "stopCompose",
   "extensions": ["matklad.rust-analyzer","serayuzgur.crates","bungcip.better-toml"],
   "forwardPorts": [3000],
-  
 }

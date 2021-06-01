@@ -59,8 +59,10 @@ jobs:
       - name: Load feeds && configuration
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          curl -L $CONFIG_FILE_SOURCE -o .config
+          echo $(pwd)
+          tree -L 1
           ./scripts/feeds update -a && ./scripts/feeds install -a
+          curl -L $CONFIG_FILE_SOURCE -o .config
 
       - name: Download package
         working-directory: ${{ env.WORK_DIR }}
