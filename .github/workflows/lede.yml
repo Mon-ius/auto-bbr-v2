@@ -59,7 +59,7 @@ jobs:
           tree -L 1
 
       - name: Load feeds && configuration
-        working-directory: ${{ env.WORK_DIR }}/${{env.REPO_NAME}}
+        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
         run: |
           echo $(pwd)
           ls -al
@@ -68,7 +68,7 @@ jobs:
           curl -L $CONFIG_FILE_SOURCE -o .config
 
       - name: Download package
-        working-directory: ${{ env.WORK_DIR }}/${{env.REPO_NAME}}
+        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
         id: package
         run: |
           echo $(pwd)
@@ -79,7 +79,7 @@ jobs:
           find dl -size -1024c -exec rm -f {} \;
 
       - name: Compile the firmware
-        working-directory: ${{ env.WORK_DIR }}/${{env.REPO_NAME}}
+        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
         id: compile
         run: |
           echo -e "$(nproc) thread compile"
@@ -90,7 +90,7 @@ jobs:
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
       - name: Compile the firmware
-        working-directory: ${{ env.WORK_DIR }}/${{env.REPO_NAME}}
+        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
         id: list
         run: |
           cd bin
