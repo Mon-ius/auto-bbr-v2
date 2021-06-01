@@ -19,7 +19,7 @@ on:
 env:
   CONFIG_FILE_SOURCE: https://downloads.openwrt.org/releases/21.02.0-rc2/targets/bcm27xx/bcm2711/config.buildinfo
   REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: 21.02.0-rc2
+  REPO_BRANCH: v21.02.0-rc2
   REPO_NAME: lede
   WORK_DIR: /lede
   FEEDS_CONF: feeds.conf.default
@@ -39,6 +39,8 @@ jobs:
           ref: 'main'
 
       - name: init
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
           sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
           sudo -E apt-get -qq update

@@ -1,5 +1,6 @@
 {
   "name": "Code_Space_container_experiment",
+  "remoteUser": "monius",
   "dockerComposeFile": "docker-compose.yml",
   "service": "the-name-of-the-service-you-want-to-work-with-in-vscode",
   "workspaceFolder": "~/Code_Space_exp",
