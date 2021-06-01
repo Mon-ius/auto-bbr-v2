@@ -1,12 +1,10 @@
 {
   "name": "Code_Space_container_experiment",
-  "remoteUser": "vscode",
+  "remoteUser": "root",
   "image": "zyclonite/zerotier",
-  "runArgs": ["--rm --cap-add=NET_ADMIN --cap-add=SYS_ADMIN --device=/dev/net/tun"],
+  "runArgs": ["--rm", "--cap-add=NET_ADMIN", "--cap-add=SYS_ADMIN", "--device=/dev/net/tun"],
   // "dockerComposeFile": ["docker-compose.yml"],
   // "service": "the-name-of-the-service-you-want-to-work-with-in-vscode",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/root",
   // "shutdownAction": "stopCompose",
-  "extensions": ["matklad.rust-analyzer","serayuzgur.crates","bungcip.better-toml"],
-  "forwardPorts": [3000],
 }

@@ -54,6 +54,9 @@ jobs:
       - name: Clone source code
         run: |
           git clone --depth 1 -b $REPO_BRANCH $REPO_URL $REPO_NAME
+          cd $REPO_NAME
+          echo $(pwd)
+          tree -L 1
           ln -sf $(pwd)/$REPO_NAME $WORK_DIR
 
       - name: Load feeds && configuration
