@@ -19,4 +19,4 @@ services:
             - SYS_PTRACE
         security_opt:
             - seccomp:unconfined
-        command: zerotier-one zerotier-cli join $NETWORK_ID
+        command: /bin/sh -c "while sleep 10000; do :; done"
