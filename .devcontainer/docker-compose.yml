@@ -1,6 +1,10 @@
 version: '3'
 services:
   default:
+    env_file: devcontainer.env
+    environment:
+      - YOUR_ENV_VAR_NAME=your-value-goes-here
+      - ANOTHER_VAR=another-value
     build:
         context: .
         dockerfile: .devcontainer/Dockerfile
