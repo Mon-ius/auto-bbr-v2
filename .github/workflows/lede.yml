@@ -1,0 +1,93 @@
+name: Build GOOGLE-BBR V2 on lede bcm2711
+on:
+  push:
+    branches: 
+      - main
+      - v2alpha
+
+  schedule:
+    - cron: '30 6 * * 1'
+      
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: true
+        default: 'true'
+
+env:
+  CONFIG_FILE_SOURCE: https://downloads.openwrt.org/releases/21.02.0-rc1/targets/bcm27xx/bcm2711/config.buildinfo
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  REPO_NAME: lede
+  WORK_DIR: /lede
+  FEEDS_CONF: feeds.conf.default
+  UPLOAD_BIN_DIR: false
+  UPLOAD_FIRMWARE: true
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: false
+  UPLOAD_RELEASE: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          ref: 'main'
+
+      - name: init
+        run: |
+          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install $(curl -fsSL git.io/bbrv2-ubuntu-2004)
+          sudo -E apt-get -qq build-dep linux
+          sudo -E apt-get -qq autoremove --purge
+          sudo -E apt-get -qq clean
+          sudo mkdir -p $WORK_DIR /release/upload
+          sudo chown $USER:$GROUPS $WORK_DIR
+          sudo chown -R $USER:$GROUPS /release
+
+      - name: Clone source code
+        working-directory: ${{ env.WORK_DIR }}
+        run: |
+          git clone -b $REPO_BRANCH $REPO_URL $REPO_NAME
+          ln -sf $WORK_DIR/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
+
+      - name: Load feeds && configuration
+        working-directory: ${{ env.WORK_DIR }}/${{REPO_NAME}}
+        run: |
+          ./scripts/feeds update -a && ./scripts/feeds install -a
+          curl -L $CONFIG_FILE_SOURCE -o .config
+
+      - name: Download package
+        working-directory: ${{ env.WORK_DIR }}/${{REPO_NAME}}
+        id: package
+        run: |
+          make defconfig
+          make download -j8
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
+
+      - name: Compile the firmware
+        working-directory: ${{ env.WORK_DIR }}/${{REPO_NAME}}
+        id: compile
+        run: |
+          echo -e "$(nproc) thread compile"
+          make -j$(nproc) || make -j1 || make -j1 V=s
+          echo "::set-output name=status::success"
+          grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+          [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+          echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+      - name: Compile the firmware
+        working-directory: ${{ env.WORK_DIR }}/${{REPO_NAME}}
+        id: list
+        run: |
+          cd bin
+          tree -L 1
+
+
