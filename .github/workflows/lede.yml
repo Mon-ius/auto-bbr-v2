@@ -59,13 +59,15 @@ jobs:
       - name: Load feeds && configuration
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          ./scripts/feeds update -a && ./scripts/feeds install -a
           curl -L $CONFIG_FILE_SOURCE -o .config
+          ./scripts/feeds update -a && ./scripts/feeds install -a
 
       - name: Download package
         working-directory: ${{ env.WORK_DIR }}
         id: package
         run: |
+          echo $(pwd)
+          ls -al
           make defconfig
           make download -j8
           find dl -size -1024c -exec ls -l {} \;

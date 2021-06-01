@@ -1,17 +1,25 @@
 version: '3'
 services:
-  default:
-    env_file: devcontainer.env
-    environment:
-      - YOUR_ENV_VAR_NAME=your-value-goes-here
-      - ANOTHER_VAR=another-value
-    build:
-        context: .
-        dockerfile: .devcontainer/Dockerfile
-    volumes:
-      - .:/workspace:cached
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
-    command: /bin/sh -c "while sleep 1000; do :; done"
+    container-1:
+        image: ubuntu:bionic
+        volumes:
+            # Mount the root folder that contains .git
+            - .:/workspace:cached
+        command: /bin/sh -c "while sleep 1000; do :; done"
+        links:
+            - container-2
+    default:
+        env_file: devcontainer.env
+        environment:
+        - YOUR_ENV_VAR_NAME=your-value-goes-here
+        - ANOTHER_VAR=another-value
+        build:
+            context: .
+            dockerfile: .devcontainer/Dockerfile
+        volumes:
+        - .:/workspace:cached
+        cap_add:
+        - SYS_PTRACE
+        security_opt:
+        - seccomp:unconfined
+        command: /bin/sh -c "while sleep 1000; do :; done"
