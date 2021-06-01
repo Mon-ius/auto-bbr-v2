@@ -54,13 +54,9 @@ jobs:
       - name: Clone source code
         run: |
           git clone --depth 1 -b $REPO_BRANCH $REPO_URL $REPO_NAME
-          echo $GITHUB_WORKSPACE
-          cd $REPO_NAME
-          tree -L 1
-          ln -sf $(pwd) $WORK_DIR
-
+          ln -sf /bbr/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
       - name: Load feeds && configuration
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ${{ env.WORK_DIR }}/${{env.}}
         run: |
           echo $(pwd)
           ls -al
@@ -69,7 +65,7 @@ jobs:
           curl -L $CONFIG_FILE_SOURCE -o .config
 
       - name: Download package
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ${{ env.WORK_DIR }}/${{env.}}
         id: package
         run: |
           echo $(pwd)
@@ -80,7 +76,7 @@ jobs:
           find dl -size -1024c -exec rm -f {} \;
 
       - name: Compile the firmware
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ${{ env.WORK_DIR }}/${{env.}}
         id: compile
         run: |
           echo -e "$(nproc) thread compile"
@@ -91,7 +87,7 @@ jobs:
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
       - name: Compile the firmware
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ${{ env.WORK_DIR }}/${{env.}}
         id: list
         run: |
           cd bin
