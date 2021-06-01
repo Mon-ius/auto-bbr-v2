@@ -1,22 +1,17 @@
-version: '3'
-services:
-    container-1:
-        image: zyclonite/zerotier
-        runArgs: ["--restart unless-stopped \
-                --restart unless-stopped \
-                --device /dev/net/tun \
-                --net host \
-                --cap-add NET_ADMIN \
-                --cap-add SYS_ADMIN"]
-        env_file: devcontainer.env
-        environment:
-            - YOUR_ENV_VAR_NAME=your-value-goes-here
-            - ANOTHER_VAR=another-value
-        build:
-            context: .
-            dockerfile: .devcontainer/Dockerfile
-        cap_add:
-            - SYS_PTRACE
-        security_opt:
-            - seccomp:unconfined
-        command: /bin/sh -c "while sleep 10000; do :; done"
+# version: '3'
+# services:
+#     container-1:
+#         image: zyclonite/zerotier
+#         runArgs: ["--restart unless-stopped","--restart unless-stopped","--device /dev/net/tun","--net host","--cap-add NET_ADMIN","--cap-add SYS_ADMIN"]
+#         env_file: devcontainer.env
+#         environment:
+#             - YOUR_ENV_VAR_NAME=your-value-goes-here
+#             - ANOTHER_VAR=another-value
+#         build:
+#             context: .
+#             dockerfile: .devcontainer/Dockerfile
+#         cap_add:
+#             - SYS_PTRACE
+#         security_opt:
+#             - seccomp:unconfined
+#         command: echo $NETWORK_ID

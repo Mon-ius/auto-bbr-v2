@@ -54,10 +54,10 @@ jobs:
       - name: Clone source code
         run: |
           git clone --depth 1 -b $REPO_BRANCH $REPO_URL $REPO_NAME
+          echo $GITHUB_WORKSPACE
           cd $REPO_NAME
-          echo $(pwd)
           tree -L 1
-          ln -sf $(pwd)/$REPO_NAME $WORK_DIR
+          ln -sf $(pwd) $WORK_DIR
 
       - name: Load feeds && configuration
         working-directory: ${{ env.WORK_DIR }}
