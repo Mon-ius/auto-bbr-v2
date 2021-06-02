@@ -56,17 +56,12 @@ jobs:
         run: |
           git clone --depth 1 -b $REPO_BRANCH $REPO_URL $REPO_NAME
           ln -sf $WORK_DIR/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
-          cd $WORK_DIR/$REPO_NAME
-          tree -L 1
 
       - name: Load feeds && configuration
         working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
         run: |
-          echo $(pwd)
-          ls -al
-          tree -L 1
           ./scripts/feeds update -a && ./scripts/feeds install -a
-          curl -L $CONFIG_FILE_SOURCE -o .config
+          # curl -L $CONFIG_FILE_SOURCE -o .config
 
       - name: Download package
         working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}

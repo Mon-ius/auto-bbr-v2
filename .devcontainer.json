@@ -1,7 +1,8 @@
 {
-    "name": "Code_Space_container_experiment",
-    "remoteUser": "root",
-    "image": "zyclonite/zerotier",
-    "runArgs": ["--rm", "--cap-add=NET_ADMIN", "--cap-add=SYS_ADMIN", "--device=/dev/net/tun"],
-    "workspaceFolder": "/root"
-  }
+  "name": "code_space_exp",
+  "dockerFile": "Dockerfile",
+  "settings": {},
+  "runArgs": ["--rm", "--cap-add=NET_ADMIN", "--cap-add=SYS_ADMIN", "--device=/dev/net/tun"],
+  "workspaceFolder": "/root",
+  "remoteUser": "monius"
+}
