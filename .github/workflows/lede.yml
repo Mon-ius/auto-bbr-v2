@@ -47,24 +47,22 @@ jobs:
           sudo -E apt-get -qq install $(curl -fsSL git.io/bbrv2-ubuntu-2004)
           sudo -E apt-get -qq autoremove --purge
           sudo -E apt-get -qq clean
-          sudo mkdir -p $WORK_DIR /release/upload
-          sudo chown $USER:$GROUPS $WORK_DIR
+          sudo mkdir -p /release/upload
           sudo chown -R $USER:$GROUPS /release
 
       - name: Clone source code
-        working-directory: ${{ env.WORK_DIR }}
         run: |
           git clone --depth 1 -b $REPO_BRANCH $REPO_URL $REPO_NAME
-          ln -sf $WORK_DIR/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
+          sudo ln -sf $(pwd)/$REPO_NAME $WORK_DIR
 
       - name: Load feeds && configuration
-        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
+        working-directory: ${{ env.WORK_DIR }}
         run: |
           curl -L $CONFIG_FILE_SOURCE -o .config
           ./scripts/feeds update -a && ./scripts/feeds install -a
 
       - name: Download package
-        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
+        working-directory: ${{ env.WORK_DIR }}
         id: package
         run: |
           make defconfig
@@ -73,7 +71,7 @@ jobs:
           find dl -size -1024c -exec rm -f {} \;
 
       - name: Compile the firmware
-        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
+        working-directory: ${{ env.WORK_DIR }}
         id: compile
         run: |
           echo -e "$(nproc) thread compile"
@@ -84,7 +82,7 @@ jobs:
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
       - name: Compile the firmware
-        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
+        working-directory: ${{ env.WORK_DIR }}
         id: list
         run: |
           cd bin
