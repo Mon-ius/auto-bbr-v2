@@ -60,7 +60,7 @@ jobs:
           tree -L 1
 
       - name: Load feeds && configuration
-        working-directory: ${{ env.WORK_DIR / env.REPO_NAME }}
+        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
         run: |
           echo $(pwd)
           ls -al
