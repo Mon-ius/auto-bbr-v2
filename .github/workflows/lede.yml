@@ -52,6 +52,7 @@ jobs:
           sudo chown -R $USER:$GROUPS /release
 
       - name: Clone source code
+        working-directory: ${{ env.WORK_DIR }}/${{ env.REPO_NAME }}
         run: |
           git clone --depth 1 -b $REPO_BRANCH $REPO_URL $REPO_NAME
           ln -sf $WORK_DIR/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
