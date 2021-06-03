@@ -1,10 +1,8 @@
-
 export CONFIG_FILE_SOURCE=https://downloads.openwrt.org/releases/21.02.0-rc2/targets/bcm27xx/bcm2711/config.buildinfo
-export REPO_URL=https://github.com/coolsnowwolf/lede
+export REPO_URL=https://github.com/MonCoeus/lede
 export REPO_BRANCH=master
 export REPO_NAME=lede
 export WORK_DIR=/lede
-export FEEDS_CONF=feeds.conf.default
 
 sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
 sudo -E apt-get -qq update
@@ -25,7 +23,7 @@ make defconfig
 make download -j8
 find dl -size -1024c -exec ls -l {} \;
 find dl -size -1024c -exec rm -f {} \;
-make -j$(nproc) || make -j1 || make -j1 V=s
+make -j1 V=s
 
 
 

@@ -18,7 +18,7 @@ on:
 
 env:
   CONFIG_FILE_SOURCE: https://downloads.openwrt.org/releases/21.02.0-rc2/targets/bcm27xx/bcm2711/config.buildinfo
-  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_URL: https://github.com/MonCoeus/lede
   REPO_BRANCH: master
   REPO_NAME: lede
   WORK_DIR: /lede
