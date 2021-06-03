@@ -63,6 +63,7 @@ jobs:
       - name: Load feeds && configuration
         working-directory: ${{ env.WORK_DIR }}
         run: |
+          curl -L "https://raw.githubusercontent.com/Mon-ius/auto-bbr-v2/main/.github/lede/.config" -o .config
           ./scripts/feeds update -a && ./scripts/feeds install -a
 
       - name: Download package
@@ -90,5 +91,6 @@ jobs:
         run: |
           cd bin
           tree -L 3
+          
 
 
