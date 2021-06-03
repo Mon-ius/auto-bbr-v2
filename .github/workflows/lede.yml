@@ -53,7 +53,7 @@ jobs:
           sudo mkdir -p /release/upload
           sudo chown -R $USER:$GROUPS /release
           df -h
-          tree -L
+          tree -L 3
 
       - name: Clone source code
         run: |
