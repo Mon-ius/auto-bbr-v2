@@ -42,6 +42,9 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
           sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
           sudo -E apt-get -qq update
           sudo -E apt-get -qq install $(curl -fsSL git.io/bbrv2-ubuntu-2004)
@@ -49,6 +52,8 @@ jobs:
           sudo -E apt-get -qq clean
           sudo mkdir -p /release/upload
           sudo chown -R $USER:$GROUPS /release
+          df -h
+          tree -L
 
       - name: Clone source code
         run: |
@@ -58,7 +63,6 @@ jobs:
       - name: Load feeds && configuration
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          curl -L $CONFIG_FILE_SOURCE -o .config
           ./scripts/feeds update -a && ./scripts/feeds install -a
 
       - name: Download package
@@ -67,7 +71,6 @@ jobs:
         run: |
           make defconfig
           make download -j8
-          find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
 
       - name: Compile the firmware
