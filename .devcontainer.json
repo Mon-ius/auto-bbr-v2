@@ -1,6 +1,6 @@
 {
   "name": "code_space_exp",
-  "dockerFile": "Dockerfile",
+  "dockerFile": "./devcontainer/Dockerfile",
   "settings": {},
   "runArgs": ["--rm", "--cap-add=NET_ADMIN", "--cap-add=SYS_ADMIN", "--device=/dev/net/tun"],
   "workspaceFolder": "/root",

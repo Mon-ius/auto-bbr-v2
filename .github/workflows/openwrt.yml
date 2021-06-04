@@ -85,7 +85,7 @@ jobs:
 
       - name: Show config
         working-directory: ${{ env.WORK_DIR }}
-        id: list
+        id: show
         run: |
           cat .config
       - name: List the firmware
