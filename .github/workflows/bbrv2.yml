@@ -18,7 +18,8 @@ on:
 env:
   REPO_URL: https://github.com/google/bbr
   REPO_BRANCH: v2alpha
-  REPO_NAME: google-bbr
+  REPO_NAME: bbr
+  WORK_DIR: /bbr
   ORIGIN_NAME: google-bbr
   UPLOAD_PKG_DIR: true
   UPLOAD_FIRMWARE: true
@@ -57,8 +58,7 @@ jobs:
           sudo -E apt-get -qq build-dep linux
           sudo -E apt-get -qq autoremove --purge
           sudo -E apt-get -qq clean
-          sudo mkdir -p /bbr /release/upload
-          sudo chown $USER:$GROUPS /bbr
+          sudo mkdir -p /release/upload
           sudo chown -R $USER:$GROUPS /release
 
       - name: Clone source code
@@ -66,10 +66,10 @@ jobs:
         run: |
           df -hT $PWD
           git clone -o $ORIGIN_NAME -b $REPO_BRANCH $REPO_URL $REPO_NAME
-          ln -sf /bbr/$REPO_NAME $GITHUB_WORKSPACE/$REPO_NAME
+          sudo ln -sf $(GITHUB_WORKSPACE)/$REPO_NAME $WORK_DIR
 
       - name: set env and config
-        working-directory: /bbr/${{ env.REPO_NAME }}
+        working-directory: ${{ env.WORK_DIR }}
         run: |
           ARC=$(dpkg --print-architecture)
           VER=$(grep '^VERSION=*\|^PATCHLEVEL=*' Makefile | sed 's/.*=\(.*\)/\1/' | sed -e 's/ //g' | sed ':a;N;$!ba;s/\n/./g')
@@ -103,7 +103,7 @@ jobs:
 
 
       - name: Disable MODULE_SIG and DEBUG_INFO
-        working-directory: /bbr/${{ env.REPO_NAME }}
+        working-directory: ${{ env.WORK_DIR }}
         run: |
           echo "copying config.gce to .config ..."
           cp config.gce .config
@@ -123,7 +123,7 @@ jobs:
 
       - name: Build kernel-package 
         id: package
-        working-directory: /bbr/${{ env.REPO_NAME }}
+        working-directory: ${{ env.WORK_DIR }}
         run: |
           set +e
           echo $(pwd)
@@ -147,7 +147,7 @@ jobs:
 
       - name: Build dpkg
         id: dpkg
-        working-directory: /bbr/${{ env.REPO_NAME }}
+        working-directory: ${{ env.WORK_DIR }}
         run: |
           ls -al .*
           rm -rf .git .idea .pybuild
@@ -164,7 +164,7 @@ jobs:
 
       - name: Packages test scripts
         id: test
-        working-directory: /bbr/${{ env.REPO_NAME }}/gtests/net/tcp/bbr/
+        working-directory: ${{ env.WORK_DIR }}/gtests/net/tcp/bbr/
         run: 
           tar -cvzf ${PKG_DIR}/${TEST_PKG} nsperf/* --owner=0 --group=0  > /tmp/test.tarball
 

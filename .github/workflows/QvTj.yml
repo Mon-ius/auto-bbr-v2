@@ -20,7 +20,8 @@ env:
   REPO_URL: https://github.com/Qv2ray/QvPlugin-Trojan-Go
   REPO_BRANCH: dev
   REPO_NAME: QvTj
-
+  WORK_DIR: /QvTj
+  
 jobs:
   build:
     strategy:
