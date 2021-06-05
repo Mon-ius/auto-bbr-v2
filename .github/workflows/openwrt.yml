@@ -90,7 +90,7 @@ jobs:
           mv .config /release/upload
           cd bin/targets/*/*
           rm -rf packages
-          mv ./* /upload/release
+          mv ./* /release/upload
 
 
       - name: List the firmware
