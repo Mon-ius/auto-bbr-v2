@@ -82,7 +82,7 @@ jobs:
           echo -e "$(nproc) thread compile"
           make -j1 V=s
           echo "::set-output name=status::success"
-          mv ./bin/packages /release/upload
+          mv ./bin/release/upload
 
       - name: List the firmware
         working-directory: ${{ env.WORK_DIR }}
@@ -96,7 +96,7 @@ jobs:
         id: tag
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "::set-output name=release_name::lede_rpi4_$(date +'%Y%m%d%H%M')"
+          echo "::set-output name=release_name::lede_rpi4_packages"
           touch release.txt
           echo "::set-output name=status::success"
           
