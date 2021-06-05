@@ -50,6 +50,13 @@ jobs:
           repository: ${{ github.repository }}
           ref: 'main'
 
+      - name: free space
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
+          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          
       - name: init
         run: |
           sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list

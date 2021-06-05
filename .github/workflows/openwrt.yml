@@ -38,23 +38,23 @@ jobs:
           repository: ${{ github.repository }}
           ref: 'main'
 
-      - name: init
-        env:
-          DEBIAN_FRONTEND: noninteractive
+      - name: free space
         run: |
           docker rmi `docker images -q`
           sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
           sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
           sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+
+      - name: init
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
           sudo -E apt-get -qq update
           sudo -E apt-get -qq install $(curl -fsSL git.io/bbrv2-ubuntu-2004)
           sudo -E apt-get -qq autoremove --purge
           sudo -E apt-get -qq clean
           sudo mkdir -p /release/upload
           sudo chown -R $USER:$GROUPS /release
-          df -h
-          tree -L 3
-          ls -al
 
       - name: Clone source code
         run: |
@@ -64,15 +64,14 @@ jobs:
       - name: Load feeds && configuration
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          # curl -L $CONFIG_FILE_SOURCE -o .config
-          curl -L "https://raw.githubusercontent.com/Mon-ius/auto-bbr-v2/main/.github/lede/.config" -o .config
+          curl -L $CONFIG_FILE_SOURCE -o .config
           ./scripts/feeds update -a && ./scripts/feeds install -a
 
       - name: Download package
         working-directory: ${{ env.WORK_DIR }}
         id: package
         run: |
-          # make defconfig
+          make defconfig
           make download -j8
           find dl -size -1024c -exec rm -f {} \;
 
@@ -81,22 +80,26 @@ jobs:
         id: compile
         run: |
           echo -e "$(nproc) thread compile"
-          make -j8 V=s
+          make -j$(nproc) || make -j1 || make -j1 V=s
           echo "::set-output name=status::success"
 
-      - name: Show config
+      - name: Keep config and firmware
         working-directory: ${{ env.WORK_DIR }}
         id: show
         run: |
-          cat .config
-          find build_dir/ -name .vermagic -exec cat {} \;
+          mv .config /release/upload
+          cd bin/targets/*/*
+          rm -rf packages
+          mv ./* /upload/release
+
 
       - name: List the firmware
         working-directory: ${{ env.WORK_DIR }}
         id: list
         run: |
+          mv ./bin /release
+          cd /release
           tree -L 3
-          mv ./bin /release/upload
 
       - name: Generate tag
         working-directory: ${{ env.WORK_DIR }}
@@ -113,3 +116,21 @@ jobs:
         with:
           name: ${{ steps.tag.outputs.release_name }}
           path: /release/upload
+
+      - name: Delete workflow runs
+        uses: GitRML/delete-workflow-runs@main
+        with:
+          repository: ${{ github.repository }}
+          retain_days: 1
+          keep_minimum_runs: 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS }}
+
+      - name: Remove old Releases
+        uses: dev-drprasad/delete-older-releases@v0.1.0
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        with:
+          keep_latest: 1
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS }}
