@@ -96,7 +96,7 @@ jobs:
         id: list
         run: |
           tree -L 3
-          mv ./bin/packages /release/upload
+          mv ./bin /release/upload
 
       - name: Generate tag
         working-directory: ${{ env.WORK_DIR }}
