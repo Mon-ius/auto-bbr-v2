@@ -95,7 +95,6 @@ jobs:
         working-directory: ${{ env.WORK_DIR }}
         id: list
         run: |
-          cd bin
           tree -L 3
           mv ./bin/packages /release/upload
 
