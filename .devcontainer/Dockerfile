@@ -25,4 +25,4 @@ COPY --from=builder /src/zerotier-one /usr/sbin/
 RUN mkdir -p /var/lib/zerotier-one \
   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-idtool \
   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-cli
-RUN zerotier-one -d && zerotier-one join ${NETWORK_ID}
+RUN zerotier-one -d && zerotier-cli join ${NETWORK_ID}
