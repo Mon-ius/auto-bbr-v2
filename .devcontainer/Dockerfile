@@ -5,9 +5,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN yes | unminimize 2>&1 \
   && sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list \
   && apt -qq update \
-  && apt -qq install $(curl -fsSL git.io/bbrv2-ubuntu-2004) \
-  && apt -qq build-dep linux \
-  && apt -qq autoremove --purge \
+RUN apt-get install $(curl -fsSL git.io/bbrv2-ubuntu-2004) -y \
+RUN apt-get -qq build-dep linux -y \
+RUN apt -qq autoremove --purge \
   && apt -qq clean \
   && git clone --quiet https://github.com/zerotier/ZeroTierOne.git /src \
   && git -C src reset --quiet --hard ${ZT_COMMIT} \
