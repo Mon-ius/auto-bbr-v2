@@ -1,4 +1,5 @@
 ARG VARIANT=bionic
+FROM buildpack-deps:${VARIANT}-curl
 ARG INSTALL_ZSH="true"
 ARG UPGRADE_PACKAGES="true"
 ARG USERNAME=monius
