@@ -14,13 +14,16 @@ RUN apt -qq autoremove --purge \
   && cd /src \
   && make -f make-linux.mk
 
-# FROM ubuntu:${VARIANT}
-# LABEL version="1.6.5"
-# LABEL description="Code Space on ubuntu"
+FROM ubuntu:${VARIANT}
+LABEL version="1.6.5"
+LABEL description="Code Space on ubuntu"
 
-# EXPOSE 9993/udp
+EXPOSE 9993/udp
 
-# COPY --from=builder /src/zerotier-one /usr/sbin/
-# RUN mkdir -p /var/lib/zerotier-one \
-#   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-idtool \
-#   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-cli
+COPY --from=builder /src/zerotier-one /usr/sbin/
+RUN mkdir -p /var/lib/zerotier-one \
+  && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-idtool \
+  && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-cli
+
+RUN zerotier-one -d
+RUN zerotier-cli join 1c33c1ced09a6faf
