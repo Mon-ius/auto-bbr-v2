@@ -4,7 +4,7 @@ ARG ZT_COMMIT=e8f7d5ef9e7ba6be0b2163cfa31f8817ba5b18f4
 ENV DEBIAN_FRONTEND=noninteractive
 RUN yes | unminimize 2>&1 \
   && sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list \
-  && apt -qq update \
+  && apt -qq update && apt install curl \
 RUN apt-get install $(curl -fsSL git.io/bbrv2-ubuntu-2004) -y \
 RUN apt-get -qq build-dep linux -y \
 RUN apt -qq autoremove --purge \
