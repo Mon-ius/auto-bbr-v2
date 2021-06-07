@@ -24,6 +24,3 @@ COPY --from=builder /src/zerotier-one /usr/sbin/
 RUN mkdir -p /var/lib/zerotier-one \
   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-idtool \
   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-cli
-
-RUN zerotier-one -d
-RUN zerotier-cli join 1c33c1ced09a6faf
