@@ -58,6 +58,8 @@ jobs:
           sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
           
       - name: init
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
           sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
           sudo -E apt-get -qq update
