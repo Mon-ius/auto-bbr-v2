@@ -1,5 +1,5 @@
 ARG VARIANT=bionic
-ARG NETWORK_ID=1c33c1ced09a6faf
+
 FROM ubuntu:${VARIANT} as builder
 ARG ZT_COMMIT=e8f7d5ef9e7ba6be0b2163cfa31f8817ba5b18f4
 ENV DEBIAN_FRONTEND=noninteractive
@@ -25,4 +25,4 @@ COPY --from=builder /src/zerotier-one /usr/sbin/
 RUN mkdir -p /var/lib/zerotier-one \
   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-idtool \
   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-cli
-RUN zerotier-one -d && zerotier-cli join ${NETWORK_ID}
+RUN zerotier-one -d
