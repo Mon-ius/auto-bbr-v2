@@ -1,4 +1,4 @@
 ARG VARIANT=bionic
-FROM buildpack-deps:${VARIANT}-curl
+FROM mcr.microsoft.com/vscode/devcontainers/base:${VARIANT}
 
 COPY init-script.sh /root/
