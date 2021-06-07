@@ -1,6 +1,9 @@
 {
-  "name": "code_space_exp",
-  "dockerFile": "./Dockerfile",
+  "name": "Ubuntu-Z",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { "VARIANT": "bionic" }
+	},
   "settings": {},
   "runArgs": ["--rm", "--cap-add=NET_ADMIN", "--cap-add=SYS_ADMIN", "--device=/dev/net/tun"],
   "workspaceFolder": "/root",
