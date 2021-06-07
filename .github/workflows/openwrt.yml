@@ -71,7 +71,7 @@ jobs:
         working-directory: ${{ env.WORK_DIR }}
         id: package
         run: |
-          make defconfig
+          make diffconfig
           make download -j8
           find dl -size -1024c -exec rm -f {} \;
 
