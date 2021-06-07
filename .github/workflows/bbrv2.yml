@@ -69,7 +69,6 @@ jobs:
           sudo chown -R $USER:$GROUPS /release
 
       - name: Clone source code
-        working-directory: /bbr
         run: |
           df -hT $PWD
           git clone -o $ORIGIN_NAME -b $REPO_BRANCH $REPO_URL $REPO_NAME

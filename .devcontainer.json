@@ -1,8 +1,8 @@
 {
   "name": "code_space_exp",
-  "dockerFile": "./devcontainer/Dockerfile",
+  "dockerFile": "./Dockerfile",
   "settings": {},
   "runArgs": ["--rm", "--cap-add=NET_ADMIN", "--cap-add=SYS_ADMIN", "--device=/dev/net/tun"],
   "workspaceFolder": "/root",
-  "remoteUser": "monius"
+  "remoteUser": "root"
 }
