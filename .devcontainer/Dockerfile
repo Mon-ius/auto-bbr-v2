@@ -1,8 +1,6 @@
-ARG VARIANT=hirsute
 ARG ZT_COMMIT=e8f7d5ef9e7ba6be0b2163cfa31f8817ba5b18f4
 
-FROM ubuntu:${VARIANT} as builder
-
+FROM ubuntu:hirsute as builder
 RUN export DEBIAN_FRONTEND=noninteractive \
   && sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list \
   &&  apt-get update \ 
@@ -16,7 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && cd /src \
   && make -f make-linux.mk
 
-FROM ubuntu:${VARIANT}
+FROM ubuntu:hirsute
 LABEL version="1.6.5"
 LABEL description="Build system on ubuntu"
 
