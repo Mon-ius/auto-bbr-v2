@@ -7,7 +7,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list \
   &&  apt-get update \ 
   && apt-get install -y curl \
-  && apt-get install $(curl -fsSL git.io/bbrv2-ubuntu-2004) -y \
+  && apt-get install $(curl -fsSL git.io/bbr-v2alpha-ubuntu-hirsute) -y \
   && apt-get -qq build-dep linux -y \
   && apt -qq autoremove --purge \
   && apt -qq clean \
@@ -21,6 +21,7 @@ LABEL version="1.6.5"
 LABEL description="Build system on ubuntu"
 
 EXPOSE 9993/udp
+
 COPY --from=builder /src/zerotier-one /usr/sbin/
 RUN mkdir -p /var/lib/zerotier-one \
   && ln -s /usr/sbin/zerotier-one /usr/sbin/zerotier-idtool \
