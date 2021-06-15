@@ -1,9 +1,7 @@
 {
   "workspaceFolder": "/root",
+  "dockerFile": "Dockerfile",
   "extensions": ["dbaeumer.vscode-eslint"],
-  "settings": {
-    "terminal.integrated.shell.linux": "/bin/zsh"
-  },
   "forwardPorts": [8000],
   "remoteUser": "vscode",
   "remoteEnv": { "MY_VARIABLE": "some-value" }
