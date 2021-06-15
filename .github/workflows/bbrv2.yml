@@ -2,6 +2,7 @@ name: Build GOOGLE-BBR V2
 on:
   push:
     branches: 
+      - main
       - v2alpha
 
   schedule:
@@ -28,7 +29,7 @@ env:
   PGP : true
   ARC: ''
   VER: ''
-  LOCALVERSION: ''
+  LOCAL_VERSION: ''
   PKG_DIR: ''
   INSTALL_DIR: ''
   BUILD_DIR: ''
@@ -72,9 +73,8 @@ jobs:
 
       - name: Clone source code
         run: |
-          df -hT $PWD
-          git clone -o $ORIGIN_NAME -b $REPO_BRANCH $REPO_URL $REPO_NAME
-          sudo ln -sf $(GITHUB_WORKSPACE)/$REPO_NAME $WORK_DIR
+          git clone --depth 1 -o $ORIGIN_NAME -b $REPO_BRANCH $REPO_URL $REPO_NAME
+          sudo ln -sf $(pwd)/$REPO_NAME $WORK_DIR
 
       - name: set env and config
         working-directory: ${{ env.WORK_DIR }}
@@ -83,15 +83,15 @@ jobs:
           VER=$(grep '^VERSION=*\|^PATCHLEVEL=*' Makefile | sed 's/.*=\(.*\)/\1/' | sed -e 's/ //g' | sed ':a;N;$!ba;s/\n/./g')
           BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
           SHA1=`git rev-parse --short HEAD`
-          LOCALVERSION=-custom-${BRANCH}-${SHA1}
-          PKG_DIR=/release/${LOCALVERSION}/pkg
-          INSTALL_DIR=/release/${LOCALVERSION}/install
-          BUILD_DIR=/release/${LOCALVERSION}/build
+          LOCAL_VERSION=-custom-${BRANCH}-${SHA1}
+          PKG_DIR=/release/${LOCAL_VERSION}/pkg
+          INSTALL_DIR=/release/${LOCAL_VERSION}/install
+          BUILD_DIR=/release/${LOCAL_VERSION}/build
           TEST_PKG=kernel-test-${BRANCH}-${SHA1}.tar.gz2
-          KERNEL_PKG=kernel${LOCALVERSION}.tar.gz2
-          RELEASE_TAG=Ubuntu-2004-bbr2${LOCALVERSION}.tar.gz2
+          KERNEL_PKG=kernel${LOCAL_VERSION}.tar.gz2
+          RELEASE_TAG=Ubuntu-2004-bbr2${LOCAL_VERSION}.tar.gz2
           MAKE_OPTS="-j`nproc` \
-                    LOCALVERSION=${LOCALVERSION} \
+                    LOCAL_VERSION=${LOCAL_VERSION} \
                     EXTRAVERSION='' \
                     INSTALL_PATH=${INSTALL_DIR}/boot \
                     INSTALL_MOD_PATH=${INSTALL_DIR}"
@@ -100,7 +100,7 @@ jobs:
           echo "ARC=$ARC" >> $GITHUB_ENV
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
           echo "SHA1=$SHA1" >> $GITHUB_ENV
-          echo "LOCALVERSION=$LOCALVERSION" >> $GITHUB_ENV
+          echo "LOCAL_VERSION=$LOCAL_VERSION" >> $GITHUB_ENV
           echo "PKG_DIR=$PKG_DIR" >> $GITHUB_ENV
           echo "INSTALL_DIR=$INSTALL_DIR" >> $GITHUB_ENV
           echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV
@@ -165,7 +165,7 @@ jobs:
           else
             sed -ri '/CONFIG_SYSTEM_TRUSTED_KEYS/s/=.+/=''/g' .config
           fi
-          sudo make -j`nproc` deb-pkg LOCALVERSION=$LOCALVERSION
+          sudo make -j`nproc` deb-pkg LOCAL_VERSION=$LOCAL_VERSION
           echo "::set-output name=status::success"
           cd /bbr && mv *.deb /release/upload
 
@@ -179,9 +179,9 @@ jobs:
       - name: List and package all
         working-directory: /release/upload
         run: |
-          mv $(ls ${KERNEL_HEADER}*) ${KERNEL_HEADER}-${VER}${LOCALVERSION}-${ARC}.deb
-          mv $(ls ${KERNEL_IMAGE}*) ${KERNEL_IMAGE}-${VER}${LOCALVERSION}-${ARC}.deb
-          mv $(ls ${KERNEL_LIBC}*) ${KERNEL_LIBC}-${VER}${LOCALVERSION}-${ARC}.deb
+          mv $(ls ${KERNEL_HEADER}*) ${KERNEL_HEADER}-${VER}${LOCAL_VERSION}-${ARC}.deb
+          mv $(ls ${KERNEL_IMAGE}*) ${KERNEL_IMAGE}-${VER}${LOCAL_VERSION}-${ARC}.deb
+          mv $(ls ${KERNEL_LIBC}*) ${KERNEL_LIBC}-${VER}${LOCAL_VERSION}-${ARC}.deb
           cp $PKG_DIR/$KERNEL_PKG /release/upload
           cp $PKG_DIR/$TEST_PKG /release/upload
           tar -cvzf /release/${RELEASE_TAG}  /release/upload/* --owner=0 --group=0  > /tmp/WeTransfer.tarball
