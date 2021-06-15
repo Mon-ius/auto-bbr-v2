@@ -3,7 +3,7 @@
   "image": "monius/build-system-ubuntu:personal",
   "settings": {},
   "runArgs": [
-    "--net=host",
+    // "--net=host",
     "--cap-add=NET_ADMIN",
     "--cap-add=SYS_ADMIN",
     "--device=/dev/net/tun",
