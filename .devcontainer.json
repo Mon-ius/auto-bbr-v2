@@ -2,7 +2,7 @@
   "name": "Ubuntu-Z",
   "dockerComposeFile": "docker-compose.devcontainer.yml",
   "service": "build-sys",
-  "workspaceFolder": "/home/monius",
+  "workspaceFolder": "/root",
   // "image": "monius/build-system-ubuntu:personal",
   // "settings": {},
   // "runArgs": [
