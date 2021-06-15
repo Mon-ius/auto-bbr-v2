@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3'
 services:
     build-sys:
         image: monius/build-system-ubuntu:personal
@@ -7,5 +7,8 @@ services:
         cap_add:
             - NET_ADMIN
             - SYS_ADMIN
+            - SYS_PTRACE
         devices:
             - "/dev/net/tun:/dev/net/tun"
+        security_opt:
+        - seccomp:unconfined
