@@ -1,8 +1,6 @@
 {
   "name": "Ubuntu-Z",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
+  "image": "monius/build-system-ubuntu:personal",
   "settings": {},
   "runArgs": [
     "--net=host",
