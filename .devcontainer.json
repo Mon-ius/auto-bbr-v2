@@ -7,7 +7,7 @@
     "--cap-add=NET_ADMIN",
     "--cap-add=SYS_ADMIN",
     "--device=/dev/net/tun",
-    "--restart unless-stopped"],
+    "--restart=unless-stopped"],
   "workspaceFolder": "/home/monius",
   "remoteUser": "monius"
 }
