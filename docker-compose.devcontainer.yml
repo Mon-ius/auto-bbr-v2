@@ -1,7 +1,7 @@
 version: '3'
 services:
     build-sys:
-        image: monius/build-system-ubuntu:personal
+        image: amd64/ubuntu
         env_file: devcontainer.env
         # network_mode: host
         # cap_add:
