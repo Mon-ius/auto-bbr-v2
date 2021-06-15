@@ -2,10 +2,3 @@ version: '3'
 services:
     build-sys:
         image: monius/build-system-ubuntu:personal
-        env_file: devcontainer.env
-        cap_add:
-            - NET_ADMIN
-            - SYS_ADMIN
-            - SYS_PTRACE
-        security_opt:
-        - seccomp:unconfined
