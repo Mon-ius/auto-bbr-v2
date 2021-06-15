@@ -1,0 +1,10 @@
+{
+  "workspaceFolder": "/root",
+  "extensions": ["dbaeumer.vscode-eslint"],
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "forwardPorts": [8000],
+  "remoteUser": "vscode",
+  "remoteEnv": { "MY_VARIABLE": "some-value" }
+}
