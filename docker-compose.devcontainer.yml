@@ -4,10 +4,10 @@ services:
         image: monius/build-system-ubuntu:personal
         env_file: devcontainer.env
         # network_mode: host
-        cap_add:
-            - NET_ADMIN
-            - SYS_ADMIN
-            - SYS_PTRACE
+        # cap_add:
+        #     - NET_ADMIN
+        #     - SYS_ADMIN
+        #     - SYS_PTRACE
         # devices:
         #     - "/dev/net/tun:/dev/net/tun"
         # security_opt:
