@@ -2,7 +2,7 @@
   "workspaceFolder": "/root",
   "extensions": ["dbaeumer.vscode-eslint"],
   "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
+    "terminal.integrated.shell.linux": "/bin/zsh"
   },
   "forwardPorts": [8000],
   "remoteUser": "vscode",
