@@ -15,3 +15,4 @@ RUN sudo sed -Ei 's/required /sufficient /' /etc/pam.d/chsh \
   && curl -L git.io/ubuntu-hirsute-p10k > ~/.p10k.zsh \
   && curl -L git.io/ubuntu-hirsute-zshrc > ~/.zshrc \
   && echo "{\n}" > ~/package.json
+  && chsh -s /bin/zsh
