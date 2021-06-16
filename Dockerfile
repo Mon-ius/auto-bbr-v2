@@ -10,7 +10,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 RUN sudo sed -Ei 's/required /sufficient /' /etc/pam.d/chsh \
   && sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
-  && chsh -s /bin/zsh \
   && curl -L git.io/antigen > ~/.antigen.zsh \ 
   && curl -L git.io/ubuntu-hirsute-antigenrc > ~/.antigenrc \
   && curl -L git.io/ubuntu-hirsute-p10k > ~/.p10k.zsh \
