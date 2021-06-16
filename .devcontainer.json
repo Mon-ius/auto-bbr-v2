@@ -1,5 +1,6 @@
 {
   "dockerFile": "Dockerfile",
   "remoteUser": "ubuntu",
-  "workspaceFolder": "/home/ubuntu"
+  "workspaceFolder": "/home/ubuntu",
+  "runArgs": ["--device=/dev/net/tun"]
 }
