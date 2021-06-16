@@ -1,7 +1,5 @@
 {
   "dockerFile": "Dockerfile",
-  "extensions": ["dbaeumer.vscode-eslint"],
   "remoteUser": "ubuntu",
-  "remoteEnv": { "NETWORK": "1c33c1ced09a6faf" },
   "workspaceFolder": "/home/ubuntu"
 }
