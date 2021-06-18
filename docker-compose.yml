@@ -1,5 +1,8 @@
-{
-  "image": "node", 
-  "workspaceFolder": "/workspace",
-
-}
+version: '3'
+services:
+    build-sys:
+        image: monius/build-system-ubuntu:personal
+        cap_add:
+            - NET_ADMIN
+            - SYS_ADMIN
+            - SYS_PTRACE
