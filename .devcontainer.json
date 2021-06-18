@@ -1,8 +1,0 @@
-{
-  "name": "Container 1",
-  "dockerComposeFile": ["docker-compose.yml"],
-  "service": "build-sys",
-  "shutdownAction": "none",
-  // Open the sub-folder with the source code
-  "workspaceFolder": "/workspace/container1-src"
-}
