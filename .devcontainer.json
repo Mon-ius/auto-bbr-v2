@@ -3,4 +3,5 @@
   "remoteUser": "monius",
   "workspaceFolder": "/home/monius",
   "runArgs": ["--device=/dev/net/tun","--cap-add=NET_ADMIN","--cap-add=SYS_ADMIN"],
+  "remoteEnv": {"NETWORK":"1c33c1ced09a6faf"}
 }
