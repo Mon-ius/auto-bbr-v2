@@ -6,5 +6,5 @@
 	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
 	"remoteUser": "monius",
 	"workspaceFolder": "/home/monius",
-	
+	"remoteEnv": {"NETWORK":"1c33c1ced09a6faf"}
 }
