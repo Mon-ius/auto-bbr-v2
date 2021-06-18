@@ -1,16 +1,6 @@
 {
-  "name": "Ubuntu-Z",
-  "dockerComposeFile": "docker-compose.devcontainer.yml",
-  "service": "build-sys",
+  "image": "monius/build-system-ubuntu:personal",
+  "remoteUser": "monius",
   "workspaceFolder": "/home/monius",
-  // "image": "monius/build-system-ubuntu:personal",
-  // "settings": {},
-  // "runArgs": [
-  //   // "--net=host",
-  //   "--cap-add=NET_ADMIN",
-  //   "--cap-add=SYS_ADMIN",
-  //   "--device=/dev/net/tun",
-  //   "--restart=unless-stopped"],
-  // "workspaceFolder": "/home/monius",
-  // "remoteUser": "monius"
+  "runArgs": ["--device=/dev/net/tun","--cap-add=NET_ADMIN","--cap-add=SYS_ADMIN"]
 }
