@@ -1,0 +1,6 @@
+{
+    "image": "monius/build-system-ubuntu:personal",
+    "remoteUser": "monius",
+    "workspaceFolder": "/home/monius",
+    "runArgs": ["--device=/dev/net/tun","--cap-add=NET_ADMIN","--cap-add=SYS_ADMIN"]
+}
