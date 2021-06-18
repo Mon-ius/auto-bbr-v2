@@ -1,7 +1,7 @@
 {
   "dockerFile": "Dockerfile",
-  "remoteUser": "monius",
-  "workspaceFolder": "/home/monius",
+  "remoteUser": "ubuntu",
+  "workspaceFolder": "/home/ubuntu",
   "runArgs": ["--device=/dev/net/tun","--cap-add=NET_ADMIN","--cap-add=SYS_ADMIN"],
   "remoteEnv": {"NETWORK":"1c33c1ced09a6faf"}
 }
