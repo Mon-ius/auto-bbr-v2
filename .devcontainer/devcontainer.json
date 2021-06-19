@@ -1,5 +1,5 @@
 {
-	"name": "Existing Dockerfile",
+	"name": "Build system",
 	"dockerFile": "Dockerfile",
 	"settings": {},
     "runArgs": ["--device=/dev/net/tun","--cap-add=NET_ADMIN","--cap-add=SYS_ADMIN"],

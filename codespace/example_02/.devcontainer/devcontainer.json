@@ -1,9 +1,11 @@
 {
-	"name": "Existing Dockerfile",
+	"name": "Build system",
 	"dockerFile": "Dockerfile",
 	"settings": {},
-    "workspaceFolder": "/home/monius",
     "runArgs": ["--device=/dev/net/tun","--cap-add=NET_ADMIN","--cap-add=SYS_ADMIN"],
 	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
-	"remoteUser": "monius"
+	"remoteUser": "monius",
+	"workspaceFolder": "/home/monius",
+	"shutdownAction":"none",
+	"postAttachCommand": ". /run/entrypoint.sh"
 }
