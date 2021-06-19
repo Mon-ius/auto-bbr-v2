@@ -5,8 +5,5 @@ services:
         cap_add:
             - NET_ADMIN
             - SYS_ADMIN
-        network_mode: host
-        devices:
-            - "/dev/net/tun:/dev/net/tun"
 
 
