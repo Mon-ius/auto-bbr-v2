@@ -1,11 +1,11 @@
-// {
-//   "name": "Code_Space_container_experiment",
-//   "remoteUser": "root",
-//   "image": "zyclonite/zerotier",
-//   "runArgs": ["--rm", "--cap-add=NET_ADMIN", "--cap-add=SYS_ADMIN", "--device=/dev/net/tun"],
-//   // "runArgs": ["--restart unless-stopped","--restart unless-stopped","--device /dev/net/tun","--net host","--cap-add NET_ADMIN","--cap-add SYS_ADMIN"],
-//   // "dockerComposeFile": ["docker-compose.yml"],
-//   // "service": "the-name-of-the-service-you-want-to-work-with-in-vscode",
-//   "workspaceFolder": "/root",
-//   // "shutdownAction": "stopCompose",
-// }
+{
+	"name": "Build system",
+	"dockerFile": "monius/build-system-ubuntu:personal",
+	"shutdownAction":"none",
+	"postAttachCommand": ". /run/entrypoint.sh",
+	"remoteUser": "monius",
+	"workspaceFolder": "/home/monius",
+	"settings": {},
+    "runArgs": ["--device=/dev/net/tun","--cap-add=NET_ADMIN","--cap-add=SYS_ADMIN"],
+	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
+}
