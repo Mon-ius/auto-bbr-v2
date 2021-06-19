@@ -5,6 +5,5 @@
 	"shutdownAction": "none",
 	"remoteUser": "monius",
 	"workspaceFolder": "/home/monius",
-	"postAttachCommand": ". /run/entrypoint.sh",
 	"settings": {}
 }
