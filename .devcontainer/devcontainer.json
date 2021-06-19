@@ -1,11 +1,10 @@
 {
 	"name": "Build system",
-	"dockerFile": "Dockerfile",
-	"shutdownAction":"none",
-	"postAttachCommand": ". /run/entrypoint.sh",
+	"dockerComposeFile":"docker-compose.yml",
+	"service": "build-sys",
+	"shutdownAction": "none",
 	"remoteUser": "monius",
 	"workspaceFolder": "/home/monius",
-	"settings": {},
-    "runArgs": ["--device=/dev/net/tun","--cap-add=NET_ADMIN","--cap-add=SYS_ADMIN"],
-	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
+	"postAttachCommand": ". /run/entrypoint.sh",
+	"settings": {}
 }

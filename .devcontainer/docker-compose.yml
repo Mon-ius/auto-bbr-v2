@@ -5,7 +5,8 @@ services:
         cap_add:
             - NET_ADMIN
             - SYS_ADMIN
-            - SYS_PTRACE
-
+        network_mode: host
+        devices:
+            - "/dev/net/tun:/dev/net/tun"
 
 
