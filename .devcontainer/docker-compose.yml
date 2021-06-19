@@ -5,5 +5,6 @@ services:
         cap_add:
             - NET_ADMIN
             - SYS_ADMIN
+        network_mode: host
 
 
